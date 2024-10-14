@@ -1,7 +1,8 @@
 #include "LoadingHelper.h"
 
-LoadingHelper::LoadingHelper() : 
-    m_hBitmap(nullptr) 
+LoadingHelper::LoadingHelper() :
+    m_hBitmap(NULL),
+    m_path(NULL)
 {
 }
 
@@ -34,7 +35,7 @@ bool LoadingHelper::OpenImageFile(HWND hWnd, LoadingHelper* loadingHelper)
 
     if (GetOpenFileName(&ofn)) 
     {                
-        //LOAD IMAGE
+        SetPath(ofn.lpstrFile);
         return true;
     }
     return false;
@@ -51,4 +52,24 @@ void LoadingHelper::Draw(HDC hdc, int x, int y)
         SelectObject(hMemDC, hOldBitmap);
         DeleteDC(hMemDC);
     }
+}
+
+void LoadingHelper::SetPath(LPWSTR path)
+{
+    m_path = path;
+}
+
+LPWSTR LoadingHelper::GetPath()
+{
+    return m_path;
+}
+
+void LoadingHelper::SetMessage(std::string message)
+{
+    m_message = message;
+}
+
+std::string LoadingHelper::GetMessage()
+{
+    return m_message;
 }

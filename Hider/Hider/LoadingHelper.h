@@ -16,8 +16,11 @@ public :
 
 	bool OpenImageFile(HWND hWnd, LoadingHelper* loadingHelper);
 	void Draw(HDC hdc, int x, int y);
+	void SetPath(LPWSTR path);
+	LPWSTR GetPath();
 
 private : 
 	HBITMAP m_hBitmap;
+	LPWSTR m_path;
 };
 
