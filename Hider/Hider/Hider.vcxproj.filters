@@ -42,9 +42,6 @@
     <Image Include="small.ico">
       <Filter>Fichiers de ressources</Filter>
     </Image>
-    <Image Include="Hider.ico">
-      <Filter>Fichiers de ressources</Filter>
-    </Image>
     <Image Include="picture.ico">
       <Filter>Fichiers de ressources</Filter>
     </Image>

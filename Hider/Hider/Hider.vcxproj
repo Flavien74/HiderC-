@@ -141,7 +141,6 @@
     <ResourceCompile Include="Hider.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Hider.ico" />
     <Image Include="picture.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
