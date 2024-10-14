@@ -8,9 +8,9 @@
 class Stenography
 {
 public:
+	Gdiplus::Bitmap* LSBEncode(WCHAR fileName, std::string message);
 
 private:
 	bool isBitSet(char ch, int pos);
-	Gdiplus::Bitmap* LSBEncode(WCHAR fileName, std::string message);
 
 };
