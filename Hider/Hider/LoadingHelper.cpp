@@ -35,7 +35,7 @@ bool LoadingHelper::OpenImageFile(HWND hWnd, LoadingHelper* loadingHelper)
 
     if (GetOpenFileName(&ofn)) 
     {                
-        SetPath(ofn.lpstrFile);
+        SetPathW(ofn.lpstrFile);
         return true;
     }
     return false;
