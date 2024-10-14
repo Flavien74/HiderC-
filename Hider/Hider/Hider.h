@@ -3,16 +3,16 @@
 #include "resource.h"
 
 
-#define MAX_LOADSTRING 100
-#define BUTTON_ID 1
-#define EDIT_ID 2
+#define BUTTON1_ID 1
+#define BUTTON2_ID 2
+#define EDIT_ID 3
 
 // Variables globales :
 HINSTANCE hInst;
-WCHAR szTitle[MAX_LOADSTRING];
-WCHAR szWindowClass[MAX_LOADSTRING];
 
 // Classe :
 
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+void CreateButton(HWND, int, LPCWSTR, int, int, int, int);
+HWND CreateInput(HWND, int, LPCWSTR, int, int, int, int);
