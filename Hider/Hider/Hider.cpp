@@ -30,13 +30,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     switch (message)
     {
-        case WM_CREATE:
-        {
-            CreateButton(hWnd, BUTTON1_ID, L"Charger une image", 650, 50, 150, 50);
-            CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", 550, 250, 350, 50);
-            hEdit = CreateInput(hWnd, EDIT_ID, L"Message a cacher", 600, 150, 250, 50);
-            break;
-        }
+    case WM_CREATE:
+        CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", 650, 50, 150, 30);
+        CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", 550, 250, 350, 50);
+        hEdit = CreateInput(hWnd, EDIT_ID, L"Message a cacher", 600, 150, 250, 50);
+
+        break;
 
         case WM_COMMAND:
         {
@@ -88,13 +87,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 void CreateButton(HWND hWnd,int button_id, LPCWSTR message,int posX, int posY, int largeur, int longueur)
 {
-    HICON hIcon = (HICON)LoadImage(NULL, L"picture.ico", IMAGE_ICON, 5, 5, LR_LOADFROMFILE);
-
-    //if (hIcon == NULL)
-    //{
-    //    MessageBox(hWnd, L"Erreur : l'icône n'a pas pu être chargée.", L"Erreur de chargement", MB_ICONERROR);
-    //}
-
     HWND hButton = CreateWindow(
         L"BUTTON",  // Précise le type de la fenêtre
         message, // Texte du bouton
@@ -107,8 +99,6 @@ void CreateButton(HWND hWnd,int button_id, LPCWSTR message,int posX, int posY, i
         (HMENU)button_id, // Identifiant du bouton
         (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
         NULL);      // Pas de données supplémentaires
-    
-    SendMessage(hButton, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hIcon);
 }
 
 HWND CreateInput(HWND hWnd,int input_id, LPCWSTR message, int posX, int posY, int largeur, int longueur)
@@ -171,4 +161,3 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return (INT_PTR)FALSE;
 }
-

@@ -7,9 +7,6 @@
 #define BUTTON2_ID 2
 #define EDIT_ID 3
 
-// Variables globales :
-HINSTANCE hInst;
-
 // Classe :
 
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
