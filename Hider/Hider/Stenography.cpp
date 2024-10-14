@@ -23,8 +23,6 @@ Gdiplus::Bitmap* Stenography::LSBEncode(WCHAR fileName, std::string message)
 
 	ch = message[charIndex];
 	int bitCount = 0;
-	bool lastChecked = false;
-	bool isEncoded = false;
 
 	if (message.length() * 8 > height * width * 3)
 	{
@@ -65,4 +63,50 @@ Gdiplus::Bitmap* Stenography::LSBEncode(WCHAR fileName, std::string message)
 	}
 	return CypheredBitmap;
 }
+
+std::string Stenography::LSBDecode(WCHAR fileName)
+{
+	Gdiplus::Bitmap* Decyphered = Gdiplus::Bitmap::FromFile(&fileName);
+
+	int height = Decyphered->GetHeight();
+	int width = Decyphered->GetWidth();
+
+	char ch = 0;
+	std::string message;
+
+	int bitCount = 0;
+
+	for (int x = 0; x < width; x++)
+	{
+		for (int y = 0; y < height; y++)
+		{
+			Gdiplus::Color pixelColor;
+			Decyphered->GetPixel(x, y, &pixelColor);
+			int col[3]{ pixelColor.GetR(),pixelColor.GetG() ,pixelColor.GetB() };
+
+			for (int c = 0; c < 3; c++)
+			{
+				if (isBitSet(col[c], 0))
+					ch |= 1;
+
+				// increment bit_count to work on next bit
+				bitCount++;
+
+				if (bitCount == 8)
+				{
+					message.push_back(ch);
+					ch = 0;
+				}
+				else
+				{
+					ch = ch << 1;
+				}
+			}
+		}
+	}
+
+	return
+}
+
+
 
