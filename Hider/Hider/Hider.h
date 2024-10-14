@@ -6,8 +6,12 @@
 #define BUTTON1_ID 1
 #define BUTTON2_ID 2
 #define EDIT_ID 3
+#define TEXT_ID 4
 
-// Classe :
+//Variable :
+int nbCharacterPossible = 50;
+wchar_t bufferMessage[255];
+static bool isTextCleared = false;
 
 class LoadingHelper;
 
@@ -17,3 +21,4 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 void CreateButton(HWND, int, LPCWSTR, int, int, int, int);
 HWND CreateInput(HWND, int, LPCWSTR, int, int, int, int);
 void CreateAWindow(HINSTANCE, int, LPCWSTR, LPCWSTR, WNDPROC, LoadingHelper* = nullptr);
+HWND CreateTextZone(HWND, int, int, int, int, int);

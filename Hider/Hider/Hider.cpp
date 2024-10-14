@@ -10,82 +10,107 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     CreateAWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp", WndProc);
 
-    MSG msg;
-    while (GetMessage(&msg, NULL, 0, 0)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
+	MSG msg;
+	while (GetMessage(&msg, NULL, 0, 0)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
 
-    return 0;
+	return 0;
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    static HWND hEdit;
-    static HWND hPicture;
+    static HWND hEdit, hStatic;
     static bool isTextCleared = false;
 
     LoadingHelper* loadingHelper = nullptr;
 
-    GdiplusStartupInput gdiplusStartupInput;
-    ULONG_PTR gdiplusToken;
-    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+	PAINTSTRUCT ps;
+	HDC hdc;
 
-    switch (message)
-    {
-    case WM_CREATE:
-        CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", 650, 50, 150, 30);
-        CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", 550, 250, 350, 50);
-        hEdit = CreateInput(hWnd, EDIT_ID, L"Message a cacher", 600, 150, 250, 50);
+	GdiplusStartupInput gdiplusStartupInput;
+	ULONG_PTR gdiplusToken;
+	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-        break;
+	switch (message)
+	{
+	case WM_CREATE:
+		CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", 650, 50, 150, 30);
+		CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", 550, 250, 350, 50);
+		hStatic = CreateTextZone(hWnd, TEXT_ID, 825, 130, 25, 15);
+		hEdit = CreateInput(hWnd, EDIT_ID, L"Message a cacher", 600, 150, 250, 50);
 
-        case WM_COMMAND:
-        {
-            switch (LOWORD(wParam)) // Check which control sent the WM_COMMAND message
-            {
-                case EDIT_ID:
-                {
-                    if (HIWORD(wParam) == EN_SETFOCUS && !isTextCleared)
-                    {
-                        // Efface le texte au focus s'il n'a pas déjà été effacé
-                        SetWindowText(hEdit, TEXT(""));
-                        isTextCleared = true;
-                    }
-                    break;
-                }
-                case BUTTON1_ID:
-                {
-                    if (loadingHelper) {
-                        delete loadingHelper;
-                    }
-                    loadingHelper = new LoadingHelper();
+		SendMessage(hEdit, EM_LIMITTEXT, (WPARAM)nbCharacterPossible, 0);
+		break;
+	case WM_COMMAND:
+	{
+		switch (LOWORD(wParam)) // Check which control sent the WM_COMMAND message
+		{
+		case EDIT_ID:
+		{
+			if (HIWORD(wParam) == EN_SETFOCUS && !isTextCleared)
+			{
+				// Efface le texte au focus s'il n'a pas déjà été effacé
+				SetWindowText(hEdit, TEXT(""));
+				isTextCleared = true;
+			}
+			if (HIWORD(wParam) == EN_CHANGE)
+			{
+				if (nbCharacterPossible > 0)
+				{
+					nbCharacterPossible--;
+					swprintf(bufferMessage, 50, L"%d", nbCharacterPossible);
 
-                    if (!loadingHelper->OpenImageFile(hWnd)) 
-                    {
-                        delete loadingHelper; 
-                        loadingHelper = nullptr;
-                    }
-                    else {
-                        CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper);
-                        InvalidateRect(hWnd, NULL, TRUE);
-                    }
-                    break;
-                }
-            }
-            break;
-        }
+					SetWindowText(hStatic, bufferMessage);
+				}
+				if (nbCharacterPossible == 0)
+				{
+					SendMessage(hEdit, EM_LIMITTEXT, (WPARAM)0, 0);  // Bloquer les entrées supplémentaires
+				}
+			}
+			break;
+		}
+		case BUTTON1_ID:
+		{
+			if (loadingHelper) {
+				delete loadingHelper;
+			}
+			loadingHelper = new LoadingHelper();
 
-    case WM_DESTROY:
-        Gdiplus::GdiplusShutdown(gdiplusToken);
+			if (!loadingHelper->OpenImageFile(hWnd)) 
+			{
+				delete loadingHelper; 
+				loadingHelper = nullptr;
+			}
+			else {
+				CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper);
+				InvalidateRect(hWnd, NULL, TRUE);
+			}
+			break;
+		}
+		case BUTTON2_ID:
+		{
+			//Faire truc
+			break;
+		}
+		}
+		break;
+	}
 
-        PostQuitMessage(0);
-        break;
+	case WM_DESTROY:
 
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
-    return 0;
+		delete loadingHelper; // Nettoyer le chargeur d'image
+		loadingHelper = nullptr;
+		GdiplusShutdown(gdiplusToken);
+
+		PostQuitMessage(0);
+		break;
+
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
 }
 
 LRESULT CALLBACK PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -120,34 +145,34 @@ LRESULT CALLBACK PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 
 void CreateButton(HWND hWnd,int button_id, LPCWSTR message,int posX, int posY, int largeur, int longueur)
 {
-    HWND hButton = CreateWindow(
-        L"BUTTON",  // Précise le type de la fenêtre
-        message, // Texte du bouton
-        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, // Styles
-        posX,         // Position X
-        posY,         // Position Y
-        largeur,        // Largeur
-        longueur,         // Hauteur
-        hWnd,       // Handle de la fenêtre parente
-        (HMENU)button_id, // Identifiant du bouton
-        (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-        NULL);      // Pas de données supplémentaires
+	HWND hButton = CreateWindow(
+		L"BUTTON",  // Précise le type de la fenêtre
+		message,			// Texte du bouton
+		SS_LEFT | WS_VISIBLE | WS_CHILD, // Styles
+		posX,         // Position X
+		posY,         // Position Y
+		largeur,        // Largeur
+		longueur,         // Hauteur
+		hWnd,       // Handle de la fenêtre parente
+		(HMENU)button_id, // Identifiant du bouton
+		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+		NULL);      // Pas de données supplémentaires
 }
 
-HWND CreateInput(HWND hWnd,int input_id, LPCWSTR message, int posX, int posY, int largeur, int longueur)
+HWND CreateInput(HWND hWnd, int input_id, LPCWSTR message, int posX, int posY, int largeur, int longueur)
 {
-    return CreateWindow(    
-        L"EDIT",            // Type de contrôle
-        message,                // Texte initial
-        WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL, // Styles
-        posX,             // Position X
-        posY,             // Position Y
-        largeur,          // Largeur
-        longueur,         // Hauteur
-        hWnd,              // Handle de la fenêtre parente
-        (HMENU)input_id,    // Identifiant du champ d'édition
-        (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-        NULL);             // Pas de données supplémentaires
+	return CreateWindow(
+		L"EDIT",            // Type de contrôle
+		message,                // Texte initial
+		WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL, // Styles
+		posX,             // Position X
+		posY,             // Position Y
+		largeur,          // Largeur
+		longueur,         // Hauteur
+		hWnd,              // Handle de la fenêtre parente
+		(HMENU)input_id,    // Identifiant du champ d'édition
+		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+		NULL);             // Pas de données supplémentaires
 }
 
 void CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName, WNDPROC func, LoadingHelper* helper)
@@ -157,7 +182,7 @@ void CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR
     wc.hInstance = hInstance;
     wc.lpszClassName = ClassName;
 
-    RegisterClass(&wc);
+	RegisterClass(&wc);
 
     LONG longueur = helper == nullptr ? CW_USEDEFAULT : helper->GetBitMap().bmWidth;
     LONG largeur = helper == nullptr ? CW_USEDEFAULT : helper->GetBitMap().bmHeight;
@@ -183,22 +208,38 @@ void CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR
     UpdateWindow(hWnd);
 }
 
+HWND CreateTextZone(HWND hWnd, int input_id, int posX, int posY, int largeur, int longueur)
+{
+	return CreateWindow(
+		L"STATIC",            // Type de contrôle
+		bufferMessage,                // Texte initial
+		WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL, // Styles
+		posX,             // Position X
+		posY,             // Position Y
+		largeur,          // Largeur
+		longueur,         // Hauteur
+		hWnd,              // Handle de la fenêtre parente
+		(HMENU)input_id,    // Identifiant du champ d'édition
+		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+		NULL);             // Pas de données supplémentaires
+}
+
 // Gestionnaire de messages pour la boîte de dialogue À propos de.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
 
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
 }
