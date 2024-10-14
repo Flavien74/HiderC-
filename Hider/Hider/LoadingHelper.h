@@ -16,10 +16,10 @@ public :
 
 	bool OpenImageFile(HWND hWnd, LoadingHelper* loadingHelper);
 	void Draw(HDC hdc, int x, int y);
-	void SetPath(LPWSTR path);
-	LPWSTR GetPath();
-	void SetMessage(std::string message);
-	std::string GetMessage();
+	void SetPathW(LPWSTR path);
+	LPWSTR GetPathW();
+	void SetMessageW(std::string message);
+	std::string GetMessageW();
 
 private : 
 	HBITMAP m_hBitmap;

@@ -54,22 +54,22 @@ void LoadingHelper::Draw(HDC hdc, int x, int y)
     }
 }
 
-void LoadingHelper::SetPath(LPWSTR path)
+void LoadingHelper::SetPathW(LPWSTR path)
 {
     m_path = path;
 }
 
-LPWSTR LoadingHelper::GetPath()
+LPWSTR LoadingHelper::GetPathW()
 {
     return m_path;
 }
 
-void LoadingHelper::SetMessage(std::string message)
+void LoadingHelper::SetMessageW(std::string message)
 {
     m_message = message;
 }
 
-std::string LoadingHelper::GetMessage()
+std::string LoadingHelper::GetMessageW()
 {
     return m_message;
 }
