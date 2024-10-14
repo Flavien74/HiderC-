@@ -51,6 +51,12 @@ Gdiplus::Bitmap* Stenography::LSBEncode(WCHAR fileName, std::string message)
 
 					// increment bit_count to work on next bit
 					bitCount++;
+
+					if (bitCount > 8)
+					{
+						charIndex++;
+						ch = message[charIndex];
+					}
 				}
 				// update the image with the changed pixel values
 				CypheredBitmap->SetPixel(x, y, Gdiplus::Color(col[0], col[1], col[2]));
