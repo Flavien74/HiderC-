@@ -8,8 +8,8 @@
 class Stenography
 {
 public:
-	Gdiplus::Bitmap* LSBEncode(WCHAR fileName, std::string message);
-	std::string LSBDecode(WCHAR fileName);
+	Gdiplus::Bitmap* LSBEncode(const wchar_t* fileName, std::string message);
+	std::string LSBDecode(Gdiplus::Bitmap* Decyphered);
 
 
 private:
