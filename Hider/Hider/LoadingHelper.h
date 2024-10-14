@@ -14,14 +14,18 @@ public :
 	LoadingHelper();
 	~LoadingHelper();
 
-	bool OpenImageFile(HWND hWnd, LoadingHelper* loadingHelper);
+	bool OpenImageFile(HWND hWnd);
+	bool LoadImageFromFile(LPCWSTR filename);
 	void Draw(HDC hdc, int x, int y);
 	void SetPathW(LPWSTR path);
 	LPWSTR GetPathW();
 	void SetMessageW(std::string message);
 	std::string GetMessageW();
+	BITMAP GetBitMap();
 
-private : 
+private :
+
+	BITMAP m_bitMap;
 	HBITMAP m_hBitmap;
 	LPWSTR m_path;
 	std::string m_message;

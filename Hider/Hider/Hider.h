@@ -9,8 +9,11 @@
 
 // Classe :
 
+class LoadingHelper;
+
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK    PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 void CreateButton(HWND, int, LPCWSTR, int, int, int, int);
 HWND CreateInput(HWND, int, LPCWSTR, int, int, int, int);
-void CreateAWindow(HINSTANCE, int, LPCWSTR, LPCWSTR);
+void CreateAWindow(HINSTANCE, int, LPCWSTR, LPCWSTR, WNDPROC, LoadingHelper* = nullptr);

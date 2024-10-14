@@ -1,13 +1,14 @@
 #include "framework.h"
 #include "Hider.h"
 #include "LoadingHelper.h"
+#include <vector>
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
-{   
-    CreateAWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp");
+{
+    CreateAWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp", WndProc);
 
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0)) {
@@ -21,8 +22,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static HWND hEdit;
+    static HWND hPicture;
     static bool isTextCleared = false;
-    static LoadingHelper* loadingHelper = nullptr;
+
+    LoadingHelper* loadingHelper = nullptr;
 
     GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
@@ -51,19 +54,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     }
                     break;
                 }
-                case BUTTON1_ID: // Gérer le chargement d'une image si le bouton est cliqué
+                case BUTTON1_ID:
                 {
                     if (loadingHelper) {
-                        delete loadingHelper; // Nettoyer l'ancienne instance
+                        delete loadingHelper;
                     }
                     loadingHelper = new LoadingHelper();
 
-                    // Appel à la fonction pour ouvrir un fichier
-                    if (!loadingHelper->OpenImageFile(hWnd, loadingHelper)) {
-                        delete loadingHelper; // Nettoyage si le chargement échoue
-                        loadingHelper = nullptr; // Eviter d'utiliser un pointeur nul
+                    if (!loadingHelper->OpenImageFile(hWnd)) 
+                    {
+                        delete loadingHelper; 
+                        loadingHelper = nullptr;
                     }
-                    InvalidateRect(hWnd, NULL, TRUE); // Demande un nouveau dessin après le chargement
+                    else {
+                        CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper);
+                        InvalidateRect(hWnd, NULL, TRUE);
+                    }
                     break;
                 }
             }
@@ -71,14 +77,41 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
 
     case WM_DESTROY:
-
-        delete loadingHelper; // Nettoyer le chargeur d'image
-        loadingHelper = nullptr;
-        GdiplusShutdown(gdiplusToken);
+        Gdiplus::GdiplusShutdown(gdiplusToken);
 
         PostQuitMessage(0);
         break;
 
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
+LRESULT CALLBACK PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    LoadingHelper* loadingHelper = (LoadingHelper*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+
+    switch (message)
+    {
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+        if (loadingHelper) 
+        {
+            loadingHelper->Draw(hdc, 0, 0); 
+        }
+        EndPaint(hWnd, &ps);
+        break;
+    }
+    case WM_DESTROY:
+
+        delete loadingHelper; 
+        loadingHelper = nullptr;
+
+        PostQuitMessage(0);
+        break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
@@ -117,26 +150,34 @@ HWND CreateInput(HWND hWnd,int input_id, LPCWSTR message, int posX, int posY, in
         NULL);             // Pas de données supplémentaires
 }
 
-void CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName)
+void CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName, WNDPROC func, LoadingHelper* helper)
 {
     WNDCLASS wc = { 0 };
-    wc.lpfnWndProc = WndProc;
+    wc.lpfnWndProc = func;
     wc.hInstance = hInstance;
     wc.lpszClassName = ClassName;
 
     RegisterClass(&wc);
+
+    LONG longueur = helper == nullptr ? CW_USEDEFAULT : helper->GetBitMap().bmWidth;
+    LONG largeur = helper == nullptr ? CW_USEDEFAULT : helper->GetBitMap().bmHeight;
 
     HWND hWnd = CreateWindowEx(
         0,
         ClassName,
         WindowName,
         WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+        CW_USEDEFAULT, CW_USEDEFAULT, longueur, largeur,
         NULL,
         NULL,
         hInstance,
         NULL
     );
+
+    if (helper != nullptr) 
+    {
+        SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)helper);
+    }
 
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
