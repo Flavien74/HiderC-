@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="Hider.h" />
+    <ClInclude Include="LoadingHelper.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Stenography.h" />
     <ClInclude Include="targetver.h" />
@@ -137,12 +138,14 @@
   <ItemGroup>
     <ClCompile Include="Hider.cpp" />
     <ClCompile Include="Stenography.cpp" />
+    <ClCompile Include="LoadingHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hider.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Hider.ico" />
+    <Image Include="picture.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
