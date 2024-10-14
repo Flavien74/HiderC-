@@ -18,9 +18,12 @@ public :
 	void Draw(HDC hdc, int x, int y);
 	void SetPath(LPWSTR path);
 	LPWSTR GetPath();
+	void SetMessage(std::string message);
+	std::string GetMessage();
 
 private : 
 	HBITMAP m_hBitmap;
 	LPWSTR m_path;
+	std::string m_message;
 };
 
