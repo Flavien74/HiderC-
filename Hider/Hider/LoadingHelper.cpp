@@ -1,35 +1,54 @@
 #include "LoadingHelper.h"
 
-LoadingHelper::LoadingHelper()
+LoadingHelper::LoadingHelper() : 
+    m_hBitmap(nullptr) 
 {
-    GdiplusStartupInput gdiplusStartupInput;
-    GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
 }
 
 LoadingHelper::~LoadingHelper()
 {
-    // Nettoyage de GDI+
-    GdiplusShutdown(m_gdiplusToken);
-}
-
-bool LoadingHelper::LoadImageFromFile(const std::wstring& filePath)
-{
-    m_image = new Gdiplus::Image(filePath.c_str());
-    if (m_image->GetLastStatus() != Gdiplus::Ok) {
-        delete m_image;
-        m_image = nullptr;
-        return false;
+    if (m_hBitmap) {
+        DeleteObject(m_hBitmap);
     }
-    return true;
 }
 
-void LoadingHelper::Draw(HWND hwnd, int x, int y)
+bool LoadingHelper::OpenImageFile(HWND hWnd, LoadingHelper* loadingHelper)
 {
-    if (m_image) {
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hwnd, &ps);
-        Graphics graphics(hdc);
-        graphics.DrawImage(m_image, x, y);
-        EndPaint(hwnd, &ps); // Terminer le dessin
+    OPENFILENAME ofn;
+    wchar_t szFile[260];
+
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = hWnd;
+    ofn.lpstrFile = szFile;
+    ofn.lpstrFile[0] = '\0';
+    ofn.nMaxFile = sizeof(szFile);
+    //ofn.lpstrFilter = L"Images (*.png;*.bmp;*.jpg;*.jpeg)\0*.png;*.bmp;*.jpg;*.jpeg\0All Files (*.*)\0*.*\0";
+    ofn.lpstrFilter = L"Images (*.png;)\0*.png;\0All Files (*.*)\0*.*\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = NULL;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = NULL;
+    ofn.lpstrTitle = L"Sélectionnez une image";
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
+
+    if (GetOpenFileName(&ofn)) 
+    {                
+        //LOAD IMAGE
+        return true;
+    }
+    return false;
+}
+
+void LoadingHelper::Draw(HDC hdc, int x, int y)
+{
+    if (m_hBitmap) {
+        HDC hMemDC = CreateCompatibleDC(hdc);
+        HBITMAP hOldBitmap = (HBITMAP)SelectObject(hMemDC, m_hBitmap);
+        BITMAP bitmap;
+        GetObject(m_hBitmap, sizeof(BITMAP), &bitmap);
+        BitBlt(hdc, x, y, bitmap.bmWidth, bitmap.bmHeight, hMemDC, 0, 0, SRCCOPY);
+        SelectObject(hMemDC, hOldBitmap);
+        DeleteDC(hMemDC);
     }
 }

@@ -1,5 +1,6 @@
 #include "framework.h"
 #include "Hider.h"
+#include "LoadingHelper.h"
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -21,26 +22,61 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static HWND hEdit;
     static bool isTextCleared = false;
+    static LoadingHelper* loadingHelper = nullptr;
+
+    GdiplusStartupInput gdiplusStartupInput;
+    ULONG_PTR gdiplusToken;
+    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
     switch (message)
     {
-    case WM_CREATE:
-        CreateButton(hWnd, BUTTON1_ID, L"Charger une image",650,50,150,50);
-        CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", 550, 250, 350, 50);
-        hEdit = CreateInput(hWnd, EDIT_ID, L"Message a cacher", 600, 150, 250, 50);
-
-        break;
-
-    case WM_COMMAND:
-        if (LOWORD(wParam) == EDIT_ID && HIWORD(wParam) == EN_SETFOCUS && !isTextCleared)
+        case WM_CREATE:
         {
-            // Efface le texte au focus s'il n'a pas déjà été effacé
-            SetWindowText(hEdit, TEXT(""));
-            isTextCleared = true;
+            CreateButton(hWnd, BUTTON1_ID, L"Charger une image", 650, 50, 150, 50);
+            CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", 550, 250, 350, 50);
+            hEdit = CreateInput(hWnd, EDIT_ID, L"Message a cacher", 600, 150, 250, 50);
+            break;
         }
-        break;
+
+        case WM_COMMAND:
+        {
+            switch (LOWORD(wParam)) // Check which control sent the WM_COMMAND message
+            {
+                case EDIT_ID:
+                {
+                    if (HIWORD(wParam) == EN_SETFOCUS && !isTextCleared)
+                    {
+                        // Efface le texte au focus s'il n'a pas déjà été effacé
+                        SetWindowText(hEdit, TEXT(""));
+                        isTextCleared = true;
+                    }
+                    break;
+                }
+                case BUTTON1_ID: // Gérer le chargement d'une image si le bouton est cliqué
+                {
+                    if (loadingHelper) {
+                        delete loadingHelper; // Nettoyer l'ancienne instance
+                    }
+                    loadingHelper = new LoadingHelper();
+
+                    // Appel à la fonction pour ouvrir un fichier
+                    if (!loadingHelper->OpenImageFile(hWnd, loadingHelper)) {
+                        delete loadingHelper; // Nettoyage si le chargement échoue
+                        loadingHelper = nullptr; // Eviter d'utiliser un pointeur nul
+                    }
+                    InvalidateRect(hWnd, NULL, TRUE); // Demande un nouveau dessin après le chargement
+                    break;
+                }
+            }
+            break;
+        }
 
     case WM_DESTROY:
+
+        delete loadingHelper; // Nettoyer le chargeur d'image
+        loadingHelper = nullptr;
+        GdiplusShutdown(gdiplusToken);
+
         PostQuitMessage(0);
         break;
 
@@ -54,10 +90,10 @@ void CreateButton(HWND hWnd,int button_id, LPCWSTR message,int posX, int posY, i
 {
     HICON hIcon = (HICON)LoadImage(NULL, L"picture.ico", IMAGE_ICON, 5, 5, LR_LOADFROMFILE);
 
-    if (hIcon == NULL)
-    {
-        MessageBox(hWnd, L"Erreur : l'icône n'a pas pu être chargée.", L"Erreur de chargement", MB_ICONERROR);
-    }
+    //if (hIcon == NULL)
+    //{
+    //    MessageBox(hWnd, L"Erreur : l'icône n'a pas pu être chargée.", L"Erreur de chargement", MB_ICONERROR);
+    //}
 
     HWND hButton = CreateWindow(
         L"BUTTON",  // Précise le type de la fenêtre
