@@ -6,29 +6,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {   
-    LPCWSTR CLASS_NAME = L"Hider";
-
-    WNDCLASS wc = { 0 };
-    wc.lpfnWndProc = WndProc;
-    wc.hInstance = hInstance;
-    wc.lpszClassName = CLASS_NAME;
-
-    RegisterClass(&wc);
-
-    HWND hWnd = CreateWindowEx(
-        0,
-        CLASS_NAME,
-        L"Hider",
-        WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-        NULL,
-        NULL,
-        hInstance,
-        NULL
-    );
-
-    ShowWindow(hWnd, nCmdShow);
-    UpdateWindow(hWnd);
+    CreateAWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp");
 
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0)) {
@@ -111,6 +89,31 @@ HWND CreateInput(HWND hWnd,int input_id, LPCWSTR message, int posX, int posY, in
         (HMENU)input_id,    // Identifiant du champ d'édition
         (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
         NULL);             // Pas de données supplémentaires
+}
+
+void CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName)
+{
+    WNDCLASS wc = { 0 };
+    wc.lpfnWndProc = WndProc;
+    wc.hInstance = hInstance;
+    wc.lpszClassName = ClassName;
+
+    RegisterClass(&wc);
+
+    HWND hWnd = CreateWindowEx(
+        0,
+        ClassName,
+        WindowName,
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+        NULL,
+        NULL,
+        hInstance,
+        NULL
+    );
+
+    ShowWindow(hWnd, nCmdShow);
+    UpdateWindow(hWnd);
 }
 
 // Gestionnaire de messages pour la boîte de dialogue À propos de.

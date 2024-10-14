@@ -16,3 +16,4 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 void CreateButton(HWND, int, LPCWSTR, int, int, int, int);
 HWND CreateInput(HWND, int, LPCWSTR, int, int, int, int);
+void CreateAWindow(HINSTANCE, int, LPCWSTR, LPCWSTR));
