@@ -28,6 +28,10 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Stenography.h">
+    <ClInclude Include="LoadingHelper.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="CreateUI.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -36,6 +40,10 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="Stenography.cpp">
+    <ClCompile Include="LoadingHelper.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateUI.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

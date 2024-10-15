@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CreateUI.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Hider.h" />
     <ClInclude Include="LoadingHelper.h" />
@@ -136,6 +137,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CreateUI.cpp" />
     <ClCompile Include="Hider.cpp" />
     <ClCompile Include="Stenography.cpp" />
     <ClCompile Include="LoadingHelper.cpp" />
