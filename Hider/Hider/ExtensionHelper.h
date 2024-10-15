@@ -14,7 +14,9 @@ public:
 
 	bool SetExtensionByPath(const std::wstring& path);
 	void SetExtensionByString(const std::wstring& extension);
+
 	const std::wstring GetCompletePath();
+	const std::wstring GetNewCompletePath(std::wstring suppName = L"_out");
 
 private :
 	const std::wstring CutText(const std::wstring* str, int end, int start = -1);

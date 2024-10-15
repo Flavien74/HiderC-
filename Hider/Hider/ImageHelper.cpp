@@ -1,6 +1,6 @@
 #include "ImageHelper.h"
 
-ImageHelper::ImageHelper() :
+ImageHelper::ImageHelper():
     m_hBitmap(NULL)
 {
 

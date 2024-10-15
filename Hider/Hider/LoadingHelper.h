@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include <string>
 
 class ImageHelper;
 class ExtensionHelper;
@@ -16,6 +17,6 @@ public :
 	bool OpenImageFile(HWND hWnd);
 	bool LoadImageFromFile();
 
-	bool SaveImage();
+	bool SaveImage(std::wstring newPathName);
 };
 
