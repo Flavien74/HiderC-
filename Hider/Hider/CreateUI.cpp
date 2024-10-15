@@ -1,16 +1,24 @@
 #include "CreateUI.h"
 
-CreateUI::CreateUI()
+CreateUI::CreateUI(HINSTANCE _hInstance)
 {
+	hInstance = _hInstance;
 }
 
 CreateUI::~CreateUI()
 {
 }
 
-void CreateUI::CreateButton(HWND hWnd, int button_id, LPCWSTR message, int posX, int posY, int largeur, int longueur)
+HWND CreateUI::CreateButton(HWND hWnd, int button_id, LPCWSTR message, int posX, int posY, int largeur, int longueur)
 {
-	HWND hButton = CreateWindow(
+	/*HBITMAP hBitmap = (HBITMAP)LoadImage(hInstance, MAKEINTRESOURCE(IDB_BUTTON), IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR);
+	if (hBitmap == NULL)
+	{
+		MessageBox(NULL, L"Erreur de chargement de l'image.", L"Erreur", MB_OK | MB_ICONERROR);
+		return 0;
+	}*/
+
+	return CreateWindow(
 		L"BUTTON",
 		message,
 		SS_LEFT | WS_VISIBLE | WS_CHILD,
@@ -40,39 +48,6 @@ HWND CreateUI::CreateInput(HWND hWnd, int input_id, LPCWSTR message, int posX, i
 		NULL);
 }
 
-void CreateUI::CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName, WNDPROC func, LoadingHelper* helper)
-{
-	WNDCLASS wc = { 0 };
-	wc.lpfnWndProc = func;
-	wc.hInstance = hInstance;
-	wc.lpszClassName = ClassName;
-
-	RegisterClass(&wc);
-
-	LONG longueur = helper == nullptr ? CW_USEDEFAULT : helper->GetBitMap().bmWidth;
-	LONG largeur = helper == nullptr ? CW_USEDEFAULT : helper->GetBitMap().bmHeight;
-
-	HWND hWnd = CreateWindowEx(
-		0,
-		ClassName,
-		WindowName,
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, longueur, largeur,
-		NULL,
-		NULL,
-		hInstance,
-		NULL
-	);
-
-	if (helper != nullptr)
-	{
-		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)helper);
-	}
-
-	ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
-}
-
 HWND CreateUI::CreateTextZone(HWND hWnd, int input_id, LPCWSTR message, int posX, int posY, int largeur, int longueur)
 {
 	return CreateWindow(
@@ -87,4 +62,47 @@ HWND CreateUI::CreateTextZone(HWND hWnd, int input_id, LPCWSTR message, int posX
 		(HMENU)input_id,
 		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
 		NULL);
+}
+
+HWND CreateUI::CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName, WNDPROC func, LoadingHelper* helper)
+{
+	hBrushBG = CreateSolidBrush(RGB(173, 216, 230));
+
+	WNDCLASS wc = { 0 };
+	wc.lpfnWndProc = func;
+	wc.hInstance = hInstance;
+	wc.lpszClassName = ClassName;
+
+	wc.hbrBackground = hBrushBG;
+
+	RegisterClass(&wc);
+
+	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+	int posX = (screenWidth / 2) - (baseWindowWidth / 2);
+	int posY = (screenHeight / 2) - (baseWindowHeight / 2);
+
+
+	HWND hWnd = CreateWindowEx(
+		0,
+		ClassName,
+		WindowName,
+		WS_OVERLAPPEDWINDOW,
+		posX, posY, baseWindowWidth, baseWindowHeight,
+		NULL,
+		NULL,
+		hInstance,
+		NULL
+	);
+
+	if (helper != nullptr)
+	{
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)helper);
+	}
+
+	ShowWindow(hWnd, nCmdShow);
+	UpdateWindow(hWnd);
+
+	return hWnd;
 }

@@ -12,6 +12,7 @@
 #define IDI_HIDER			107
 #define IDI_SMALL				108
 #define IDC_HIDER			109
+#define IDB_BUTTON			110
 #define IDC_MYICON				2
 #ifndef IDC_STATIC
 #define IDC_STATIC				-1

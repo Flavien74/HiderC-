@@ -1,7 +1,7 @@
 #include "framework.h"
 #include "Hider.h"
 #include "LoadingHelper.h"
-#include "CreateUI.h"
+#include "createUI.h"
 #include <vector>
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -9,8 +9,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
-	CreateUI createUI;
-	createUI.CreateAWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp", WndProc);
+	createUI = new CreateUI(hInstance);
+	firstWindow = createUI->CreateAWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp", WndProc);
 
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0)) {
@@ -23,11 +23,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    static HWND hEdit, hStatic, hStatic2;
+    static HWND hbutton1, hbutton2, hbutton3, hEdit, hStatic1, hStatic2, hStatic3;
+
     static bool isTextCleared = false;
 
     LoadingHelper* loadingHelper = nullptr;
-	CreateUI createUI;
 
 	PAINTSTRUCT ps;
 	HDC hdc;
@@ -39,17 +39,53 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_CREATE:
-		createUI.CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", 650, 50, 150, 30);
+	{
+		hbutton1 = createUI->CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", (createUI->baseWindowWidth / 2) - (createUI->buttonWidth / 2), (createUI->baseWindowWidth / 8), createUI->buttonWidth, createUI->buttonHeight);
+		hStatic1 = createUI->CreateTextZone(hWnd, TEXT_ID, L"", (createUI->baseWindowWidth / 2) + (200 / 2), (createUI->baseWindowWidth / 5), 25, 15);
+		hEdit = createUI->CreateInput(hWnd, EDIT_ID, L"Message a cacher", (createUI->baseWindowWidth / 2) - (250 / 2), (createUI->baseWindowWidth / 4.5), 250, 50);
 
-		hStatic = createUI.CreateTextZone(hWnd, TEXT_ID, L"", 825, 130, 25, 15);
-		hEdit = createUI.CreateInput(hWnd, EDIT_ID, L"Message a cacher", 600, 150, 250, 50);
+		hbutton2 = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", (createUI->baseWindowWidth / 2) - (350 / 2), (createUI->baseWindowWidth / 3), 350, 50);
+		hbutton3 = createUI->CreateButton(hWnd, BUTTON3_ID, L"Reveler le message", (createUI->baseWindowWidth / 2) - (createUI->buttonWidth / 2), (createUI->baseWindowWidth / 2.4), createUI->buttonWidth, createUI->buttonHeight);
 
-		createUI.CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", 550, 250, 350, 50);
-		createUI.CreateButton(hWnd, BUTTON3_ID, L"Reveler le message", 650, 330, 150, 30);
+		hStatic2 = createUI->CreateTextZone(hWnd, TEXT3_ID, L"Message cache : ", (createUI->baseWindowWidth / 2) - (200 / 2), (createUI->baseWindowWidth / 1.8), 200, 20);
+		hStatic3 = createUI->CreateTextZone(hWnd, TEXT2_ID, L"", (createUI->baseWindowWidth / 2) - (200 / 2), (createUI->baseWindowWidth / 1.75), 200, 20);
 
-		hStatic2 = createUI.CreateTextZone(hWnd, TEXT2_ID,L"", 600, 400, 200, 20);
-		createUI.CreateTextZone(hWnd, TEXT3_ID,L"Message cache : ", 600, 380, 125, 20);
 		break;
+	}
+	case WM_SIZE:
+	{
+		if (LOWORD(lParam) < (createUI->baseWindowWidth - 50))
+		{
+			int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+			int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+			int posY = (screenHeight / 2) - (createUI->baseWindowHeight / 2);
+			int posX = (screenWidth / 2) - (createUI->baseWindowWidth / 2);
+
+			MoveWindow(firstWindow, posX, posY, createUI->baseWindowWidth - 50, createUI->baseWindowHeight, TRUE);
+		}
+		else if (HIWORD(lParam) < (createUI->baseWindowHeight - 50))
+		{
+			int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+			int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+			int posY = (screenHeight / 2) - (createUI->baseWindowHeight / 2);
+			int posX = (screenWidth / 2) - (createUI->baseWindowWidth / 2);
+
+			MoveWindow(firstWindow, posX, posY, createUI->baseWindowWidth, createUI->baseWindowHeight - 50, TRUE);
+		}
+		else {
+			int width = LOWORD(lParam);
+			int height = HIWORD(lParam);
+
+			MoveWindow(hbutton1, (width / 2) - (createUI->buttonWidth / 2), (height / 8), createUI->buttonWidth, createUI->buttonHeight, TRUE);
+			MoveWindow(hStatic1, (width / 2) + (200 / 2), (height / 5), 25, 15, TRUE);
+			MoveWindow(hEdit, (width / 2) - (250 / 2), (height / 4.5), 250, 50, TRUE);
+			MoveWindow(hbutton2, (width / 2) - (350 / 2), (height / 3), 350, 50, TRUE);
+			MoveWindow(hbutton3, (width / 2) - (createUI->buttonWidth / 2), (height / 2.4), createUI->buttonWidth, createUI->buttonHeight, TRUE);
+			MoveWindow(hStatic2, (width / 2) - (200 / 2), (height / 1.8), 200, 20, TRUE);
+			MoveWindow(hStatic3, (width / 2) - (200 / 2), (height / 1.72), 200, 20, TRUE);
+		}
+	}
+	break;
 	case WM_COMMAND:
 	{
 		switch (LOWORD(wParam)) // Check which control sent the WM_COMMAND message
@@ -83,7 +119,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				nbLastCharacter = nbCurrentCharacter;
 				swprintf(bufferMessage, 50, L"%d", nbCharacterPossible);
 
-				SetWindowText(hStatic, bufferMessage);
+				SetWindowText(hStatic1, bufferMessage);
 			}
 			break;
 		}
@@ -100,7 +136,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				loadingHelper = nullptr;
 			}
 			else {
-				createUI.CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper);
+				createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper);
 				InvalidateRect(hWnd, NULL, TRUE);
 			}
 			break;

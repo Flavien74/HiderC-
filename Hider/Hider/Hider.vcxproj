@@ -147,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="picture.ico" />
+    <Image Include="poisson.bmp" />
     <Image Include="small.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

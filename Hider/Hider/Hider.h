@@ -10,6 +10,9 @@
 #define TEXT2_ID 5
 #define TEXT3_ID 6
 
+class LoadingHelper;
+class CreateUI;
+
 //Variable :
 int nbCharacterPossible = 50;
 int nbCurrentCharacter = 0;
@@ -17,7 +20,8 @@ int nbLastCharacter = 0;
 wchar_t bufferMessage[255];
 static bool isTextCleared = false;
 
-class LoadingHelper;
+HWND firstWindow;
+CreateUI* createUI = nullptr;
 
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK    PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
