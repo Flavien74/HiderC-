@@ -68,8 +68,16 @@ bool LoadingHelper::LoadImageFromFile()
     return true;
 }
 
-bool LoadingHelper::SaveImage()
+bool LoadingHelper::SaveImage(std::wstring newPathName)
 {
-    return false;
-}
+    Bitmap image(m_currentImage->m_hBitmap, nullptr);
 
+    if (image.GetLastStatus() != Ok) {
+        return false; 
+    }
+
+    CLSID clsid;
+    Status status = image.Save(newPathName.c_str(), &clsid, nullptr);
+
+    return (status == Ok);
+}
