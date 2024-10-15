@@ -1,4 +1,5 @@
 #include "CreateUI.h"
+#include "ImageHelper.h"
 
 CreateUI::CreateUI()
 {
@@ -40,7 +41,7 @@ HWND CreateUI::CreateInput(HWND hWnd, int input_id, LPCWSTR message, int posX, i
 		NULL);
 }
 
-void CreateUI::CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName, WNDPROC func, LoadingHelper* helper)
+void CreateUI::CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName, WNDPROC func, ImageHelper* helper)
 {
 	WNDCLASS wc = { 0 };
 	wc.lpfnWndProc = func;
@@ -49,8 +50,8 @@ void CreateUI::CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassNam
 
 	RegisterClass(&wc);
 
-	LONG longueur = helper == nullptr ? CW_USEDEFAULT : helper->GetBitMap().bmWidth;
-	LONG largeur = helper == nullptr ? CW_USEDEFAULT : helper->GetBitMap().bmHeight;
+	LONG longueur = helper == nullptr ? CW_USEDEFAULT : helper->m_bitMap.bmWidth;
+	LONG largeur = helper == nullptr ? CW_USEDEFAULT : helper->m_bitMap.bmHeight;
 
 	HWND hWnd = CreateWindowEx(
 		0,

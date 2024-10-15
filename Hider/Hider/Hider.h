@@ -17,7 +17,7 @@ int nbLastCharacter = 0;
 wchar_t bufferMessage[255];
 static bool isTextCleared = false;
 
-class LoadingHelper;
+class ImageHelper;
 
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK    PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

@@ -2,6 +2,8 @@
 #include "Hider.h"
 #include "LoadingHelper.h"
 #include "CreateUI.h"
+#include "ImageHelper.h"
+
 #include <vector>
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -28,9 +30,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     LoadingHelper* loadingHelper = nullptr;
 	CreateUI createUI;
-
-	PAINTSTRUCT ps;
-	HDC hdc;
 
 	GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
@@ -100,7 +99,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				loadingHelper = nullptr;
 			}
 			else {
-				createUI.CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper);
+				createUI.CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper->m_currentImage);
 				InvalidateRect(hWnd, NULL, TRUE);
 			}
 			break;
@@ -131,7 +130,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 LRESULT CALLBACK PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    LoadingHelper* loadingHelper = (LoadingHelper*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	ImageHelper* imageHelper = (ImageHelper*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
     switch (message)
     {
@@ -139,19 +138,17 @@ LRESULT CALLBACK PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
     {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);
-        if (loadingHelper) 
+        if (imageHelper) 
         {
-            loadingHelper->Draw(hdc, 0, 0); 
+            imageHelper->Draw(hdc, 0, 0); 
         }
         EndPaint(hWnd, &ps);
         break;
     }
     case WM_DESTROY:
 
-        delete loadingHelper; 
-        loadingHelper = nullptr;
-
-        PostQuitMessage(0);
+        delete imageHelper; 
+        imageHelper = nullptr;
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
