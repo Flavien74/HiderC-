@@ -10,7 +10,7 @@
 #define TEXT2_ID 5
 #define TEXT3_ID 6
 
-class LoadingHelper;
+class ImageHelper;
 class CreateUI;
 
 //Variable :
@@ -19,8 +19,9 @@ int nbCurrentCharacter = 0;
 int nbLastCharacter = 0;
 wchar_t bufferMessage[255];
 static bool isTextCleared = false;
+CreateUI* createUI = nullptr;
 
-class ImageHelper;
+HWND firstWindow;
 
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK    PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

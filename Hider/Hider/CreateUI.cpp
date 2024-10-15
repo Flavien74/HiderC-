@@ -49,7 +49,7 @@ HWND CreateUI::CreateInput(HWND hWnd, int input_id, LPCWSTR message, int posX, i
 		NULL);
 }
 
-void CreateUI::CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName, WNDPROC func, ImageHelper* helper)
+HWND CreateUI::CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName, WNDPROC func, ImageHelper* helper)
 {
 	WNDCLASS wc = { 0 };
 	wc.lpfnWndProc = func;
@@ -80,6 +80,8 @@ void CreateUI::CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassNam
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
+
+	return hWnd;
 }
 
 HWND CreateUI::CreateTextZone(HWND hWnd, int input_id, LPCWSTR message, int posX, int posY, int largeur, int longueur)
@@ -96,47 +98,4 @@ HWND CreateUI::CreateTextZone(HWND hWnd, int input_id, LPCWSTR message, int posX
 		(HMENU)input_id,
 		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
 		NULL);
-}
-
-HWND CreateUI::CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName, WNDPROC func, LoadingHelper* helper)
-{
-	hBrushBG = CreateSolidBrush(RGB(173, 216, 230));
-
-	WNDCLASS wc = { 0 };
-	wc.lpfnWndProc = func;
-	wc.hInstance = hInstance;
-	wc.lpszClassName = ClassName;
-
-	wc.hbrBackground = hBrushBG;
-
-	RegisterClass(&wc);
-
-	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-
-	int posX = (screenWidth / 2) - (baseWindowWidth / 2);
-	int posY = (screenHeight / 2) - (baseWindowHeight / 2);
-
-
-	HWND hWnd = CreateWindowEx(
-		0,
-		ClassName,
-		WindowName,
-		WS_OVERLAPPEDWINDOW,
-		posX, posY, baseWindowWidth, baseWindowHeight,
-		NULL,
-		NULL,
-		hInstance,
-		NULL
-	);
-
-	if (helper != nullptr)
-	{
-		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)helper);
-	}
-
-	ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
-
-	return hWnd;
 }
