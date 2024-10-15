@@ -129,16 +129,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CreateUI.h" />
+    <ClInclude Include="ExtensionHelper.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Hider.h" />
+    <ClInclude Include="ImageHelper.h" />
     <ClInclude Include="LoadingHelper.h" />
+    <ClInclude Include="MessageHelper.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Stenography.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CreateUI.cpp" />
+    <ClCompile Include="ExtensionHelper.cpp" />
     <ClCompile Include="Hider.cpp" />
+    <ClCompile Include="ImageHelper.cpp" />
+    <ClCompile Include="MessageHelper.cpp" />
     <ClCompile Include="Stenography.cpp" />
     <ClCompile Include="LoadingHelper.cpp" />
   </ItemGroup>
@@ -146,9 +152,12 @@
     <ResourceCompile Include="Hider.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="linux.png" />
     <Image Include="picture.ico" />
     <Image Include="poisson.bmp" />
     <Image Include="small.ico" />
+    <Image Include="TestImage.png" />
+    <Image Include="TestImageJPG.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

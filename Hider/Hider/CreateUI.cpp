@@ -1,4 +1,5 @@
 #include "CreateUI.h"
+#include "ImageHelper.h"
 
 CreateUI::CreateUI(HINSTANCE _hInstance)
 {
@@ -46,6 +47,39 @@ HWND CreateUI::CreateInput(HWND hWnd, int input_id, LPCWSTR message, int posX, i
 		(HMENU)input_id,
 		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
 		NULL);
+}
+
+void CreateUI::CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName, WNDPROC func, ImageHelper* helper)
+{
+	WNDCLASS wc = { 0 };
+	wc.lpfnWndProc = func;
+	wc.hInstance = hInstance;
+	wc.lpszClassName = ClassName;
+
+	RegisterClass(&wc);
+
+	LONG longueur = helper == nullptr ? CW_USEDEFAULT : helper->m_bitMap.bmWidth;
+	LONG largeur = helper == nullptr ? CW_USEDEFAULT : helper->m_bitMap.bmHeight;
+
+	HWND hWnd = CreateWindowEx(
+		0,
+		ClassName,
+		WindowName,
+		WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, longueur, largeur,
+		NULL,
+		NULL,
+		hInstance,
+		NULL
+	);
+
+	if (helper != nullptr)
+	{
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)helper);
+	}
+
+	ShowWindow(hWnd, nCmdShow);
+	UpdateWindow(hWnd);
 }
 
 HWND CreateUI::CreateTextZone(HWND hWnd, int input_id, LPCWSTR message, int posX, int posY, int largeur, int longueur)
