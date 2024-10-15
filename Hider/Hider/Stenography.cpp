@@ -47,7 +47,7 @@ Gdiplus::Bitmap* Stenography::LSBEncode(const wchar_t* fileName, std::string mes
 				// increment bit_count to work on next bit
 				bitCount++;
 
-				if (bitCount >= 8)
+				if (bitCount == 8)
 				{
 					charIndex++;
 					if (charIndex >= message.length())
@@ -55,6 +55,7 @@ Gdiplus::Bitmap* Stenography::LSBEncode(const wchar_t* fileName, std::string mes
 						return CypheredBitmap;
 					}
 					ch = message[charIndex];
+					bitCount = 0;
 				}
 				// update the image with the changed pixel values
 				CypheredBitmap->SetPixel(x, y, Gdiplus::Color(col[0], col[1], col[2]));
@@ -89,20 +90,23 @@ std::string Stenography::LSBDecode(Gdiplus::Bitmap* Decyphered)
 				// increment bit_count to work on next bit
 				bitCount++;
 
-				if (bitCount == 8)
+				if (bitCount >= 8)
 				{
+					if (ch == -1)
+					{
+						return message;
+					}
 					message.push_back(ch);
 					bitCount = 0;
 					ch = 0;
 				}
 				else
 				{
-					ch <<= 1;
+					ch = ch << 1;
 				}
 			}
 		}
 	}
-
 	return message;
 }
 

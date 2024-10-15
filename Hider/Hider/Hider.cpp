@@ -67,10 +67,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			InvalidateRect(hWnd, NULL, TRUE); // Demande un nouveau dessin après le chargement
 			break;
-		case BUTTON2_ID:
-			Stenography steno;
-			steno.LSBDecode( steno.LSBEncode(L"linux.png", "Open"));
-			break;
 		}
 		}
 		break;
