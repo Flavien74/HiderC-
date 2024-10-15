@@ -108,6 +108,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,10 +132,12 @@
     <ClInclude Include="Hider.h" />
     <ClInclude Include="LoadingHelper.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Stenography.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Hider.cpp" />
+    <ClCompile Include="Stenography.cpp" />
     <ClCompile Include="LoadingHelper.cpp" />
   </ItemGroup>
   <ItemGroup>

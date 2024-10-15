@@ -143,7 +143,7 @@ LRESULT CALLBACK PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
     return 0;
 }
 
-void CreateButton(HWND hWnd,int button_id, LPCWSTR message,int posX, int posY, int largeur, int longueur)
+void CreateButton(HWND hWnd, int button_id, LPCWSTR message, int posX, int posY, int largeur, int longueur)
 {
 	HWND hButton = CreateWindow(
 		L"BUTTON",  // Précise le type de la fenêtre
