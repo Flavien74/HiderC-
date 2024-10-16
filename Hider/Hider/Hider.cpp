@@ -118,9 +118,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					nbCharacterPossible++;
 				}
 				nbLastCharacter = nbCurrentCharacter;
-				swprintf(bufferMessage, 50, L"%d", nbCharacterPossible);
+				swprintf(buffernumber, 50, L"%d", nbCharacterPossible);
 
-				SetWindowText(hStatic1, bufferMessage);
+				SetWindowText(hStatic1, buffernumber);
 			}
 			break;
 		}
@@ -142,7 +142,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case BUTTON2_ID:
 		{
 			//NE PAS FERMER IMAGE POUR QUE CA PASSE
-			steno->LSBEncode(loadingHelper->m_currentImage->m_bitMap, bufferMessage);
+			GetWindowText(hEdit, bufferMessage, 255);
+			MessageBox(NULL, bufferMessage, L"Texte de l'input", MB_OK);
+			steno->LSBEncode(loadingHelper->m_currentImage->m_bitMap,bufferMessage);
 			createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture_Encrypte", PictureWndProc, loadingHelper->m_currentImage);
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
