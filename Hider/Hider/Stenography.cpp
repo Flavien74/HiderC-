@@ -47,10 +47,10 @@ void Stenography::LSBEncode(Gdiplus::Bitmap* CypheredBitmap, const wchar_t* mess
 
 			for (int c = 0; c < 3; c++)
 			{
+				col[c] &= 0xFE;
+
 				if (isBitSet(ch, 7 - bitCount))
 					col[c] |= 1;
-				else
-					col[c] &= ~1;
 
 				// increment bit_count to work on next bit
 				bitCount++;
@@ -60,6 +60,7 @@ void Stenography::LSBEncode(Gdiplus::Bitmap* CypheredBitmap, const wchar_t* mess
 					charIndex++;
 					if (charIndex >= wcslen(message))
 					{
+						CypheredBitmap->SetPixel(x, y, Gdiplus::Color(col[0], col[1], col[2]));
 						return;
 					}
 					ch = message[charIndex];
@@ -97,7 +98,7 @@ std::wstring Stenography::LSBDecode(Gdiplus::Bitmap* Decyphered)
 				// increment bit_count to work on next bit
 				bitCount++;
 
-				if (bitCount >= 8)
+				if (bitCount == 8)
 				{
 					if (ch == -1)
 					{
