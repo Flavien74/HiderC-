@@ -143,7 +143,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			//NE PAS FERMER IMAGE POUR QUE CA PASSE
 			GetWindowText(hEdit, bufferMessage, 255);
-			MessageBox(NULL, bufferMessage, L"Texte de l'input", MB_OK);
 			steno->LSBEncode(loadingHelper->m_currentImage->m_bitMap,bufferMessage);
 			createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture_Encrypte", PictureWndProc, loadingHelper->m_currentImage);
 			InvalidateRect(hWnd, NULL, TRUE);
