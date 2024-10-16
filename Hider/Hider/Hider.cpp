@@ -169,14 +169,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (CheckAndCreateLoadingHelper(hWnd))
 			{
-				loadingHelper = new LoadingHelper();
-			}
-			if (!loadingHelper->OpenImageFile(hWnd))
-			{
-				delete loadingHelper;
-				loadingHelper = nullptr;
-			}
-			else {
 				nbCharacterPossible = loadingHelper->m_currentImage->m_bitMap->GetHeight() * loadingHelper->m_currentImage->m_bitMap->GetWidth() * 3;
 				swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
 
