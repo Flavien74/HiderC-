@@ -58,8 +58,8 @@ HWND CreateUI::CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassNam
 
 	RegisterClass(&wc);
 
-	LONG longueur = helper == nullptr ? CW_USEDEFAULT : helper->m_bitMap.bmWidth;
-	LONG largeur = helper == nullptr ? CW_USEDEFAULT : helper->m_bitMap.bmHeight;
+	LONG longueur = helper == nullptr ? CW_USEDEFAULT : helper->m_bitMap->GetWidth();
+	LONG largeur = helper == nullptr ? CW_USEDEFAULT : helper->m_bitMap->GetHeight();
 
 	HWND hWnd = CreateWindowEx(
 		0,

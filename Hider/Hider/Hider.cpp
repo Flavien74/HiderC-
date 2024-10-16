@@ -3,6 +3,8 @@
 #include "LoadingHelper.h"
 #include "CreateUI.h"
 #include "ImageHelper.h"
+#include "LoadingHelper.h"
+#include "Stenography.h"
 
 #include <vector>
 
@@ -12,6 +14,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ int       nCmdShow)
 {
 	createUI = new CreateUI(hInstance);
+	steno = new Stenography();
+	loadingHelper = new LoadingHelper();
 	firstWindow = createUI->CreateAWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp", WndProc);
 
 	MSG msg;
@@ -28,8 +32,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     static HWND hbutton1, hbutton2, hbutton3, hEdit, hStatic1, hStatic2, hStatic3;
 
     static bool isTextCleared = false;
-
-    LoadingHelper* loadingHelper = nullptr;
 
 	GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
@@ -124,9 +126,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		case BUTTON1_ID:
 		{
-			if (loadingHelper) {
-				delete loadingHelper;
-			}
 			loadingHelper = new LoadingHelper();
 
 			if (!loadingHelper->OpenImageFile(hWnd)) 
@@ -142,6 +141,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		case BUTTON2_ID:
 		{
+			//NE PAS FERMER IMAGE POUR QUE CA PASSE
+			steno->LSBEncode(loadingHelper->m_currentImage->m_bitMap, bufferMessage);
+			createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture_Encrypte", PictureWndProc, loadingHelper->m_currentImage);
+			InvalidateRect(hWnd, NULL, TRUE);
+			break;
+		}
+		case BUTTON3_ID:
+		{
+			std::string newMessage = steno->LSBDecode(loadingHelper->m_currentImage->m_bitMap);
+			//SetWindowText(hStatic1, newMessage);
 			//Faire truc
 			break;
 		}
@@ -153,6 +162,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		delete loadingHelper; // Nettoyer le chargeur d'image
 		loadingHelper = nullptr;
+		delete createUI; // Nettoyer le chargeur d'image
+		createUI = nullptr;
+		delete steno; // Nettoyer le chargeur d'image
+		steno = nullptr;
 		GdiplusShutdown(gdiplusToken);
 
 		PostQuitMessage(0);

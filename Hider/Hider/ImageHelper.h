@@ -8,7 +8,7 @@ class ImageHelper
 {
 public:
 
-	BITMAP m_bitMap;
+	Bitmap* m_bitMap;
 	HBITMAP m_hBitmap;
 
 	ImageHelper();

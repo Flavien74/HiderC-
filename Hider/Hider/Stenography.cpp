@@ -11,10 +11,18 @@ bool Stenography::isBitSet(char ch, int pos)
 	return false;
 }
 
-Gdiplus::Bitmap* Stenography::LSBEncode(const wchar_t* fileName, std::string message)
+Stenography::Stenography()
 {
-	Gdiplus::Bitmap* CypheredBitmap = Gdiplus::Bitmap::FromFile(fileName);
 
+}
+
+Stenography::~Stenography()
+{
+
+}
+
+void Stenography::LSBEncode(Gdiplus::Bitmap* CypheredBitmap, const wchar_t* message)
+{
 	int height = CypheredBitmap->GetHeight();
 	int width = CypheredBitmap->GetWidth();
 
@@ -24,7 +32,7 @@ Gdiplus::Bitmap* Stenography::LSBEncode(const wchar_t* fileName, std::string mes
 	ch = message[charIndex];
 	int bitCount = 0;
 
-	if (message.length() * 8 > height * width * 3)
+	if (wcslen(message) * 8 > height * width * 3)
 	{
 		// message too big or image too small
 	}
@@ -50,9 +58,9 @@ Gdiplus::Bitmap* Stenography::LSBEncode(const wchar_t* fileName, std::string mes
 				if (bitCount == 8)
 				{
 					charIndex++;
-					if (charIndex >= message.length())
+					if (charIndex >= wcslen(message))
 					{
-						return CypheredBitmap;
+						return;
 					}
 					ch = message[charIndex];
 					bitCount = 0;
@@ -62,7 +70,6 @@ Gdiplus::Bitmap* Stenography::LSBEncode(const wchar_t* fileName, std::string mes
 			}
 		}
 	}
-	return CypheredBitmap;
 }
 
 std::string Stenography::LSBDecode(Gdiplus::Bitmap* Decyphered)

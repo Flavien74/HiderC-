@@ -18,8 +18,8 @@ void ImageHelper::Draw(HDC hdc, int x, int y)
     if (m_hBitmap) {
         HDC hMemDC = CreateCompatibleDC(hdc);
         HBITMAP hOldBitmap = (HBITMAP)SelectObject(hMemDC, m_hBitmap);
-        GetObject(m_hBitmap, sizeof(BITMAP), &m_bitMap);
-        BitBlt(hdc, x, y, m_bitMap.bmWidth, m_bitMap.bmHeight, hMemDC, 0, 0, SRCCOPY);
+        GetObject(m_hBitmap, sizeof(Bitmap), &m_bitMap);
+        BitBlt(hdc, x, y, m_bitMap->GetWidth(), m_bitMap->GetHeight(), hMemDC, 0, 0, SRCCOPY);
         SelectObject(hMemDC, hOldBitmap);
         DeleteDC(hMemDC);
     }

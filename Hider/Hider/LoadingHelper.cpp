@@ -52,19 +52,19 @@ bool LoadingHelper::LoadImageFromFile()
     std::vector<wchar_t> buffer(completePath.begin(), completePath.end());
     buffer.push_back(L'\0');
     newStr = buffer.data();
-    Bitmap bitmap(newStr);
+    m_currentImage->m_bitMap = new Bitmap(newStr);
 
-    if (bitmap.GetLastStatus() != Ok) {
+    if (m_currentImage->m_bitMap->GetLastStatus() != Ok) {
         MessageBox(NULL, L"Erreur lors de la création du bitmap.", L"Erreur", MB_OK);
         return false;
     }
 
-    if (bitmap.GetHBITMAP(Color(0, 0, 0, 0), &m_currentImage->m_hBitmap) != Ok) {
+    if (m_currentImage->m_bitMap->GetHBITMAP(Color(0, 0, 0, 0), &m_currentImage->m_hBitmap) != Ok) {
         MessageBox(NULL, L"Erreur lors de la conversion de l'image en HBITMAP.", L"Erreur", MB_OK);
         return false;
     }
 
-    GetObject(m_currentImage->m_hBitmap, sizeof(BITMAP), &m_currentImage->m_bitMap);
+    GetObject(m_currentImage->m_hBitmap, sizeof(Bitmap), &m_currentImage->m_bitMap);
     return true;
 }
 
