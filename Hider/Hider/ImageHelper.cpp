@@ -13,14 +13,17 @@ ImageHelper::~ImageHelper()
     }
 }
 
-void ImageHelper::Draw(HDC hdc, int x, int y)
+void ImageHelper::Draw(HDC hdc, int x, int y, int width, int height)
 {
-    if (m_hBitmap) {
-        HDC hMemDC = CreateCompatibleDC(hdc);
-        HBITMAP hOldBitmap = (HBITMAP)SelectObject(hMemDC, m_hBitmap);
-        GetObject(m_hBitmap, sizeof(Bitmap), &m_bitMap);
-        BitBlt(hdc, x, y, m_bitMap->GetWidth(), m_bitMap->GetHeight(), hMemDC, 0, 0, SRCCOPY);
-        SelectObject(hMemDC, hOldBitmap);
-        DeleteDC(hMemDC);
-    }
+    if (m_bitMap == nullptr) return;
+
+    Graphics graphics(hdc);
+
+    int imgWidth = m_bitMap->GetWidth();
+    int imgHeight = m_bitMap->GetHeight();
+
+    if (width == -1) width = imgWidth;
+    if (height == -1) height = imgHeight;
+
+    graphics.DrawImage(m_bitMap, x, y, width, height);
 }

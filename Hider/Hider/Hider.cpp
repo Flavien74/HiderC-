@@ -181,26 +181,69 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 LRESULT CALLBACK PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	ImageHelper* imageHelper = (ImageHelper*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	PAINTSTRUCT ps;
 
     switch (message)
     {
-    case WM_PAINT:
-    {
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hWnd, &ps);
-        if (imageHelper) 
-        {
-            imageHelper->Draw(hdc, 0, 0); 
-        }
-        EndPaint(hWnd, &ps);
-        break;
-    }
-    case WM_DESTROY:
-        break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
-    return 0;
+	case WM_PAINT:
+	{
+		int x, y = 0;
+		HDC hdc = BeginPaint(hWnd, &ps);
+		
+		RECT clientRect;
+		GetClientRect(hWnd, &clientRect);
+		int windowWidth = clientRect.right - clientRect.left;
+		int windowHeight = clientRect.bottom - clientRect.top;
+		
+		HDC hdcMem = CreateCompatibleDC(hdc);
+		HBITMAP hbmMem = CreateCompatibleBitmap(hdc, windowWidth, windowHeight);
+		HGDIOBJ hOldBitmap = SelectObject(hdcMem, hbmMem);
+
+		HBRUSH hBrush = (HBRUSH)(COLOR_WINDOW + 1);
+		FillRect(hdcMem, &clientRect, hBrush);
+
+		if (imageHelper && imageHelper->m_bitMap)
+		{
+			int imgWidth = imageHelper->m_bitMap->GetWidth();
+			int imgHeight = imageHelper->m_bitMap->GetHeight();
+
+			float aspectRatio = (float)imgWidth / (float)imgHeight;
+
+			int newWidth = windowWidth;
+			int newHeight = static_cast<int>(newWidth / aspectRatio);
+
+			if (newHeight > windowHeight) {
+				newHeight = windowHeight;
+				newWidth = static_cast<int>(newHeight * aspectRatio);
+			}
+
+			x = (windowWidth - newWidth) / 2;
+			y = (windowHeight - newHeight) / 2;
+
+			imageHelper->Draw(hdcMem, x, y, newWidth, newHeight);
+		}
+
+		BitBlt(hdc, 0, 0, windowWidth, windowHeight, hdcMem, 0, 0, SRCCOPY);
+
+		SelectObject(hdcMem, hOldBitmap);
+		DeleteObject(hbmMem);
+		DeleteDC(hdcMem);
+
+		EndPaint(hWnd, &ps);
+		break;
+	}
+	case WM_SIZE:
+	{
+		InvalidateRect(hWnd, NULL, TRUE);
+		break;
+	}
+	case WM_DESTROY:
+
+		break;
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
 }
 
 // Gestionnaire de messages pour la boîte de dialogue À propos de.

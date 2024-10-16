@@ -14,6 +14,6 @@ public:
 	ImageHelper();
 	~ImageHelper();
 
-	void Draw(HDC hdc, int x, int y);
+	void Draw(HDC hdc, int x, int y, int width = -1, int height = -1);
 };
 
