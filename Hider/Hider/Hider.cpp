@@ -3,6 +3,7 @@
 #include "LoadingHelper.h"
 #include "CreateUI.h"
 #include "ImageHelper.h"
+#include "ExtensionHelper.h"
 #include "LoadingHelper.h"
 #include "Stenography.h"
 
@@ -15,7 +16,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	createUI = new CreateUI(hInstance);
 	steno = new Stenography();
-	loadingHelper = new LoadingHelper();
+
 	firstWindow = createUI->CreateAWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp", WndProc);
 
 	MSG msg;
@@ -41,12 +42,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 	{
-		hbutton1 = createUI->CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", (createUI->baseWindowWidth / 2) - (createUI->buttonWidth / 2), (createUI->baseWindowWidth / 8), createUI->buttonWidth, createUI->buttonHeight);
+		//hbutton1 = createUI->CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", (createUI->baseWindowWidth / 2) - (createUI->buttonWidth / 2), (createUI->baseWindowWidth / 8), createUI->buttonWidth, createUI->buttonHeight);
 		hStatic1 = createUI->CreateTextZone(hWnd, TEXT_ID, L"", (createUI->baseWindowWidth / 2) + (200 / 2), (createUI->baseWindowWidth / 5), 25, 15);
 		hEdit = createUI->CreateInput(hWnd, EDIT_ID, L"Message a cacher", (createUI->baseWindowWidth / 2) - (250 / 2), (createUI->baseWindowWidth / 4.5), 250, 50);
 
-		hbutton2 = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", (createUI->baseWindowWidth / 2) - (350 / 2), (createUI->baseWindowWidth / 3), 350, 50);
-		hbutton3 = createUI->CreateButton(hWnd, BUTTON3_ID, L"Reveler le message", (createUI->baseWindowWidth / 2) - (createUI->buttonWidth / 2), (createUI->baseWindowWidth / 2.4), createUI->buttonWidth, createUI->buttonHeight);
+		//hbutton2 = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", (createUI->baseWindowWidth / 2) - (350 / 2), (createUI->baseWindowWidth / 3), 350, 50);
+		hbutton2 = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", (createUI->baseWindowWidth / 2) - (createUI->bigButtonWidth / 2), (createUI->baseWindowWidth / 3), createUI->bigButtonWidth, createUI->bigButtonHeight);
+		hbutton3 = createUI->CreateButton(hWnd, BUTTON3_ID, L"Reveler le message", (createUI->baseWindowWidth / 2) - (createUI->bigButtonWidth / 2), (createUI->baseWindowWidth / 2.4), createUI->bigButtonWidth, createUI->bigButtonHeight);
 
 		hStatic2 = createUI->CreateTextZone(hWnd, TEXT3_ID, L"Message cache : ", (createUI->baseWindowWidth / 2) - (200 / 2), (createUI->baseWindowWidth / 1.8), 200, 20);
 		hStatic3 = createUI->CreateTextZone(hWnd, TEXT2_ID, L"", (createUI->baseWindowWidth / 2) - (200 / 2), (createUI->baseWindowWidth / 1.75), 200, 20);
@@ -77,11 +79,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			int width = LOWORD(lParam);
 			int height = HIWORD(lParam);
 
-			MoveWindow(hbutton1, (width / 2) - (createUI->buttonWidth / 2), (height / 8), createUI->buttonWidth, createUI->buttonHeight, TRUE);
+			//MoveWindow(hbutton1, (width / 2) - (createUI->buttonWidth / 2), (height / 8), createUI->buttonWidth, createUI->buttonHeight, TRUE);
 			MoveWindow(hStatic1, (width / 2) + (200 / 2), (height / 5), 25, 15, TRUE);
 			MoveWindow(hEdit, (width / 2) - (250 / 2), (height / 4.5), 250, 50, TRUE);
-			MoveWindow(hbutton2, (width / 2) - (350 / 2), (height / 3), 350, 50, TRUE);
-			MoveWindow(hbutton3, (width / 2) - (createUI->buttonWidth / 2), (height / 2.4), createUI->buttonWidth, createUI->buttonHeight, TRUE);
+			//MoveWindow(hbutton2, (width / 2) - (350 / 2), (height / 3), 350, 50, TRUE);
+			MoveWindow(hbutton2, (width / 2) - (createUI->bigButtonWidth / 2), (height / 3), createUI->bigButtonWidth, createUI->bigButtonHeight, TRUE);
+			MoveWindow(hbutton3, (width / 2) - (createUI->bigButtonWidth / 2), (height / 2.4), createUI->bigButtonWidth, createUI->bigButtonHeight, TRUE);
 			MoveWindow(hStatic2, (width / 2) - (200 / 2), (height / 1.8), 200, 20, TRUE);
 			MoveWindow(hStatic3, (width / 2) - (200 / 2), (height / 1.72), 200, 20, TRUE);
 		}
@@ -126,33 +129,38 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		case BUTTON1_ID:
 		{
-			loadingHelper = new LoadingHelper();
-
-			if (!loadingHelper->OpenImageFile(hWnd)) 
+			if (CheckAndCreateLoadingHelper(hWnd))
 			{
-				delete loadingHelper; 
-				loadingHelper = nullptr;
-			}
-			else {
 				createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper->m_currentImage);
-				InvalidateRect(hWnd, NULL, TRUE);
+				DestroyLoadingHelper(hWnd);
+				break;
 			}
-			break;
 		}
 		case BUTTON2_ID:
 		{
-			//NE PAS FERMER IMAGE POUR QUE CA PASSE
-			GetWindowText(hEdit, bufferMessage, 255);
-			steno->LSBEncode(loadingHelper->m_currentImage->m_bitMap,bufferMessage);
-			createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture_Encrypte", PictureWndProc, loadingHelper->m_currentImage);
-			InvalidateRect(hWnd, NULL, TRUE);
+			if (CheckAndCreateLoadingHelper(hWnd))
+			{
+				GetWindowText(hEdit, bufferMessage, 255);
+				steno->LSBEncode(loadingHelper->m_currentImage->m_bitMap, bufferMessage);
+
+				loadingHelper->SaveImage(loadingHelper->m_currentExtension->GetNewCompletePath());
+
+				createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture_Encrypte", PictureWndProc, loadingHelper->m_currentImage);
+				DestroyLoadingHelper(hWnd);
+			}
 			break;
 		}
 		case BUTTON3_ID:
 		{
-			std::wstring newMessage = steno->LSBDecode(loadingHelper->m_currentImage->m_bitMap);
-			LPCWSTR lpcwstr = newMessage.c_str();
-			SetWindowText(hStatic3, lpcwstr);
+			if (CheckAndCreateLoadingHelper(hWnd)) 
+			{
+				std::wstring newMessage = steno->LSBDecode(loadingHelper->m_currentImage->m_bitMap);
+
+				LPCWSTR lpcwstr = newMessage.c_str();
+				SetWindowText(hStatic3, lpcwstr);
+
+				DestroyLoadingHelper(hWnd);
+			}
 			break;
 		}
 		}
@@ -161,11 +169,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_DESTROY:
 
-		delete loadingHelper; // Nettoyer le chargeur d'image
+		delete loadingHelper;
 		loadingHelper = nullptr;
-		delete createUI; // Nettoyer le chargeur d'image
+		delete createUI;
 		createUI = nullptr;
-		delete steno; // Nettoyer le chargeur d'image
+		delete steno;
 		steno = nullptr;
 		GdiplusShutdown(gdiplusToken);
 
@@ -239,6 +247,8 @@ LRESULT CALLBACK PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 	}
 	case WM_DESTROY:
 
+		delete loadingHelper;
+		loadingHelper = nullptr;
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -264,4 +274,27 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 	return (INT_PTR)FALSE;
+}
+
+bool CheckAndCreateLoadingHelper(HWND hWnd)
+{
+	if (loadingHelper == nullptr)
+	{
+		loadingHelper = new LoadingHelper();
+		if (!loadingHelper->OpenImageFile(hWnd))
+		{
+			delete loadingHelper;
+			loadingHelper = nullptr;
+			return false;
+		}
+	}
+	return true;
+}
+
+void DestroyLoadingHelper(HWND hWnd)
+{
+	InvalidateRect(hWnd, NULL, TRUE);
+
+	delete loadingHelper;
+	loadingHelper = nullptr;
 }

@@ -13,8 +13,8 @@ public:
 	int baseWindowWidth = 1000;
 	int baseWindowHeight = 800;
 
-	int bigButtonWidth = 150;
-	int bigButtonHeight = 30;
+	int bigButtonWidth = 200;
+	int bigButtonHeight = 50;
 	int buttonWidth = 150;
 	int buttonHeight = 30;
 public:

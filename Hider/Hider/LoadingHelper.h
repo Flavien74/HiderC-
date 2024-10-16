@@ -18,5 +18,6 @@ public :
 	bool LoadImageFromFile();
 
 	bool SaveImage(std::wstring newPathName);
+	int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 };
 

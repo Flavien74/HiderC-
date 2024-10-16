@@ -31,3 +31,6 @@ HWND firstWindow;
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK    PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+bool CheckAndCreateLoadingHelper(HWND hWnd);
+void DestroyLoadingHelper(HWND hWnd);

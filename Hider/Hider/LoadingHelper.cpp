@@ -70,14 +70,64 @@ bool LoadingHelper::LoadImageFromFile()
 
 bool LoadingHelper::SaveImage(std::wstring newPathName)
 {
-    Bitmap image(m_currentImage->m_hBitmap, nullptr);
-
-    if (image.GetLastStatus() != Ok) {
-        return false; 
+    if (m_currentImage->m_bitMap->GetLastStatus() != Ok) {
+        return false;
     }
 
-    CLSID clsid;
-    Status status = image.Save(newPathName.c_str(), &clsid, nullptr);
+    const WCHAR* mimeType = nullptr;
+    if (m_currentExtension->m_extension == L".png") {
+        mimeType = L"image/png";
+    }
+    else if (m_currentExtension->m_extension == L".jpg" || m_currentExtension->m_extension == L".jpeg") {
+        mimeType = L"image/jpeg";
+    }
+    else if (m_currentExtension->m_extension == L".bmp") {
+        mimeType = L"image/bmp";
+    }
+    else if (m_currentExtension->m_extension == L".gif") {
+        mimeType = L"image/gif";
+    }
+    else {
+        return false;  // Unsupported format
+    }
 
-    return (status == Ok);
+    // Get the CLSID for the desired format
+    CLSID clsid;
+    if (GetEncoderClsid(mimeType, &clsid) == -1) {
+        return false;  // Could not get CLSID
+    }
+
+    // Save the image
+    Status status = m_currentImage->m_bitMap->Save(newPathName.c_str(), &clsid, nullptr);
+
+    return (status == Ok);  // Return true if save is successful
+}
+
+// Helper function to get the CLSID of an image encoder (e.g., PNG, JPEG, BMP)
+int LoadingHelper::GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
+{
+    UINT num = 0;          // Number of image encoders
+    UINT size = 0;         // Size of the image encoder array in bytes
+
+    // Get the number and size of the image encoders
+    GetImageEncodersSize(&num, &size);
+    if (size == 0) return -1;  // Failure
+
+    ImageCodecInfo* pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
+    if (pImageCodecInfo == nullptr) return -1;  // Failure
+
+    GetImageEncoders(num, size, pImageCodecInfo);
+
+    for (UINT i = 0; i < num; ++i)
+    {
+        if (wcscmp(pImageCodecInfo[i].MimeType, format) == 0)
+        {
+            *pClsid = pImageCodecInfo[i].Clsid;
+            free(pImageCodecInfo);
+            return i;  // Success
+        }
+    }
+
+    free(pImageCodecInfo);
+    return -1;  // Failure
 }
