@@ -7,7 +7,6 @@ class ImageHelper;
 class CreateUI
 {
 private:
-	HBRUSH hBrushBG;
 	HINSTANCE hInstance;
 public:
 	int baseWindowWidth = 1000;
@@ -24,7 +23,9 @@ public:
 
 	HWND CreateButton(HWND, int, LPCWSTR, int, int, int, int);
 	HWND CreateInput(HWND, int, LPCWSTR, int, int, int, int);
+	HWND CreateBaseWindow(HINSTANCE, int, LPCWSTR, LPCWSTR, WNDPROC, ImageHelper* = nullptr);
 	HWND CreateAWindow(HINSTANCE, int, LPCWSTR, LPCWSTR, WNDPROC, ImageHelper* = nullptr);
-	HWND CreateTextZone(HWND, int, LPCWSTR, int, int, int, int);
+
+	HWND CreateTextZone(HWND, int, LPCWSTR, int, int, int, int, long);
 };
 

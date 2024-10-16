@@ -16,7 +16,7 @@ class Stenography;
 class LoadingHelper;
 
 //Variable :
-int nbCharacterPossible = 50;
+int nbCharacterPossible = 0;
 int nbCurrentCharacter = 0;
 int nbLastCharacter = 0;
 wchar_t bufferMessage[256];
@@ -25,6 +25,8 @@ static bool isTextCleared = false;
 CreateUI* createUI = nullptr;
 Stenography* steno = nullptr;
 LoadingHelper* loadingHelper = nullptr;
+
+HBRUSH hBrushTransparent = NULL;
 
 HWND firstWindow;
 

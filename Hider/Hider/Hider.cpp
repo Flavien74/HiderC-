@@ -10,14 +10,14 @@
 #include <vector>
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow)
 {
 	createUI = new CreateUI(hInstance);
 	steno = new Stenography();
-
-	firstWindow = createUI->CreateAWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp", WndProc);
+	loadingHelper = new LoadingHelper();
+	firstWindow = createUI->CreateBaseWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp", WndProc);
 
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0)) {
@@ -30,9 +30,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    static HWND hbutton1, hbutton2, hbutton3, hEdit, hStatic1, hStatic2, hStatic3;
+	static HWND hbutton1, hbutton2, hbutton3, hEdit, hStatic1, hStatic2, hStatic3;
 
-    static bool isTextCleared = false;
+	static bool isTextCleared = false;
+	static bool isFirstChange = true;
+	static bool isEditing = false;;
 
 	GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
@@ -42,18 +44,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 	{
-		//hbutton1 = createUI->CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", (createUI->baseWindowWidth / 2) - (createUI->buttonWidth / 2), (createUI->baseWindowWidth / 8), createUI->buttonWidth, createUI->buttonHeight);
-		hStatic1 = createUI->CreateTextZone(hWnd, TEXT_ID, L"", (createUI->baseWindowWidth / 2) + (200 / 2), (createUI->baseWindowWidth / 5), 25, 15);
+		hBrushTransparent = (HBRUSH)GetStockObject(HOLLOW_BRUSH);
+
+		hbutton1 = createUI->CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", (createUI->baseWindowWidth / 2) - (createUI->buttonWidth / 2), (createUI->baseWindowWidth / 8), createUI->buttonWidth, createUI->buttonHeight);
+		hStatic1 = createUI->CreateTextZone(hWnd, TEXT_ID, L"", (createUI->baseWindowWidth / 2) + (200 / 2), (createUI->baseWindowWidth / 5), 25, 100, ES_RIGHT);
 		hEdit = createUI->CreateInput(hWnd, EDIT_ID, L"Message a cacher", (createUI->baseWindowWidth / 2) - (250 / 2), (createUI->baseWindowWidth / 4.5), 250, 50);
 
 		//hbutton2 = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", (createUI->baseWindowWidth / 2) - (350 / 2), (createUI->baseWindowWidth / 3), 350, 50);
 		hbutton2 = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", (createUI->baseWindowWidth / 2) - (createUI->bigButtonWidth / 2), (createUI->baseWindowWidth / 3), createUI->bigButtonWidth, createUI->bigButtonHeight);
 		hbutton3 = createUI->CreateButton(hWnd, BUTTON3_ID, L"Reveler le message", (createUI->baseWindowWidth / 2) - (createUI->bigButtonWidth / 2), (createUI->baseWindowWidth / 2.4), createUI->bigButtonWidth, createUI->bigButtonHeight);
 
-		hStatic2 = createUI->CreateTextZone(hWnd, TEXT3_ID, L"Message cache : ", (createUI->baseWindowWidth / 2) - (200 / 2), (createUI->baseWindowWidth / 1.8), 200, 20);
-		hStatic3 = createUI->CreateTextZone(hWnd, TEXT2_ID, L"", (createUI->baseWindowWidth / 2) - (200 / 2), (createUI->baseWindowWidth / 1.75), 200, 20);
+		hStatic2 = createUI->CreateTextZone(hWnd, TEXT3_ID, L"Message cache : ", (createUI->baseWindowWidth / 2) - (200 / 2), (createUI->baseWindowWidth / 1.8), 200, 20, ES_LEFT);
+		hStatic3 = createUI->CreateTextZone(hWnd, TEXT2_ID, L"", (createUI->baseWindowWidth / 2) - (200 / 2), (createUI->baseWindowWidth / 1.75), 200, 20, ES_LEFT);
 
 		break;
+	}
+	case WM_CTLCOLORSTATIC:
+	{
+		HDC hdcStatic = (HDC)wParam;
+		HWND hStatic = (HWND)lParam;
+
+		SetBkMode(hdcStatic, TRANSPARENT);
+
+		if (GetDlgCtrlID(hStatic) == TEXT_ID) {
+			COLORREF textColor = RGB(255, 0, 0);
+			SetTextColor(hdcStatic, textColor);
+		}
+
+		return (INT_PTR)hBrushTransparent;
 	}
 	case WM_SIZE:
 	{
@@ -79,51 +97,71 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			int width = LOWORD(lParam);
 			int height = HIWORD(lParam);
 
-			//MoveWindow(hbutton1, (width / 2) - (createUI->buttonWidth / 2), (height / 8), createUI->buttonWidth, createUI->buttonHeight, TRUE);
-			MoveWindow(hStatic1, (width / 2) + (200 / 2), (height / 5), 25, 15, TRUE);
-			MoveWindow(hEdit, (width / 2) - (250 / 2), (height / 4.5), 250, 50, TRUE);
-			//MoveWindow(hbutton2, (width / 2) - (350 / 2), (height / 3), 350, 50, TRUE);
-			MoveWindow(hbutton2, (width / 2) - (createUI->bigButtonWidth / 2), (height / 3), createUI->bigButtonWidth, createUI->bigButtonHeight, TRUE);
-			MoveWindow(hbutton3, (width / 2) - (createUI->bigButtonWidth / 2), (height / 2.4), createUI->bigButtonWidth, createUI->bigButtonHeight, TRUE);
-			MoveWindow(hStatic2, (width / 2) - (200 / 2), (height / 1.8), 200, 20, TRUE);
-			MoveWindow(hStatic3, (width / 2) - (200 / 2), (height / 1.72), 200, 20, TRUE);
+			MoveWindow(hbutton1, (width / 2) - (createUI->buttonWidth / 2), (height / 6), createUI->buttonWidth, createUI->buttonHeight, TRUE);
+			MoveWindow(hStatic1, (width / 2) - (200 / 2), (height / 3.3), 220, 15, TRUE);
+			MoveWindow(hEdit, (width / 2) - (250 / 2), (height / 3), 250, 50, TRUE);
+			MoveWindow(hbutton2, (width / 2) - (350 / 2), (height / 2), 350, 50, TRUE);
+			MoveWindow(hbutton3, (width / 2) - (createUI->buttonWidth / 2), (height / 1.5), createUI->buttonWidth, createUI->buttonHeight, TRUE);
+			MoveWindow(hStatic2, (width / 2) - (200 / 2), (height / 1.25), 200, 20, TRUE);
+			MoveWindow(hStatic3, (width / 2) - (200 / 2), (height / 1.2), 200, 20, TRUE);
 		}
 	}
 	break;
 	case WM_COMMAND:
 	{
+		if (!isEditing) {
+			isEditing = true;
+			break;
+		}
+		isEditing = true;
 		switch (LOWORD(wParam)) // Check which control sent the WM_COMMAND message
 		{
 		case EDIT_ID:
 		{
+			
 			if (HIWORD(wParam) == EN_SETFOCUS && !isTextCleared)
 			{
 				// Efface le texte au focus s'il n'a pas déjà été effacé
 				SetWindowText(hEdit, TEXT(""));
 				isTextCleared = true;
 			}
+
 			if (HIWORD(wParam) == EN_CHANGE)
 			{
-				nbCurrentCharacter = GetWindowTextLength(hEdit);
-				if (nbCurrentCharacter > nbLastCharacter) 
+				if (isFirstChange)
 				{
-					if (nbCharacterPossible > 0)
-					{
-						nbCharacterPossible--;
-					}
-					else
-					{
-						SendMessage(hEdit, EM_SETLIMITTEXT, (WPARAM)1, 0);  // Bloquer les entrées supplémentaires
-					}
+					isFirstChange = false; // Ignore le premier changement
+					break; // Sortie pour ne pas exécuter le reste du code
 				}
-				if (nbCurrentCharacter < nbLastCharacter)
+				if (nbCharacterPossible == 0)
 				{
-					nbCharacterPossible++;
+					isEditing = false;
+					MessageBox(hWnd, L"Renseigne une image avant de pouvoir renseigner ton message !", L"image missing", MB_ICONERROR | MB_OK);
 				}
-				nbLastCharacter = nbCurrentCharacter;
-				swprintf(buffernumber, 50, L"%d", nbCharacterPossible);
-
-				SetWindowText(hStatic1, buffernumber);
+				else {
+					SendMessage(hEdit, EM_SETLIMITTEXT, (WPARAM)nbCharacterPossible, 0);
+					nbCurrentCharacter = GetWindowTextLength(hEdit);
+					if (nbCurrentCharacter > nbLastCharacter)
+					{
+						if (nbCharacterPossible > 0)
+						{
+							nbCharacterPossible--;
+						}
+						else
+						{
+							SendMessage(hEdit, EM_SETLIMITTEXT, (WPARAM)1, 0);  // Bloquer les entrées supplémentaires
+						}
+					}
+					else if (nbCurrentCharacter < nbLastCharacter)
+					{
+						nbCharacterPossible++;
+					}
+					nbLastCharacter = nbCurrentCharacter;
+					swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
+					SetWindowText(hStatic1, L"");
+					InvalidateRect(hWnd, NULL, TRUE);
+					SetWindowText(hStatic1, buffernumber);
+				}
 			}
 			break;
 		}
@@ -131,6 +169,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (CheckAndCreateLoadingHelper(hWnd))
 			{
+				loadingHelper = new LoadingHelper();
+			}
+			if (!loadingHelper->OpenImageFile(hWnd))
+			{
+				delete loadingHelper;
+				loadingHelper = nullptr;
+			}
+			else {
+				nbCharacterPossible = loadingHelper->m_currentImage->m_bitMap->GetHeight() * loadingHelper->m_currentImage->m_bitMap->GetWidth() * 3;
+				swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
+
+				SetWindowText(hStatic1, buffernumber);
+
 				createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper->m_currentImage);
 				DestroyLoadingHelper(hWnd);
 				break;
@@ -141,6 +192,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (CheckAndCreateLoadingHelper(hWnd))
 			{
 				GetWindowText(hEdit, bufferMessage, 255);
+				if (bufferMessage[0] == L'\0') {
+					MessageBox(hWnd, L"Ecris un message à cacher dans l'image !", L"message missing", MB_ICONERROR | MB_OK);
+					break;
+				}
+				if (!loadingHelper->m_currentImage) {
+					MessageBox(hWnd, L"Choisis un fichier comme image !", L"iamge missing", MB_ICONERROR | MB_OK);
+					break;
+				}
 				steno->LSBEncode(loadingHelper->m_currentImage->m_bitMap, bufferMessage);
 
 				loadingHelper->SaveImage(loadingHelper->m_currentExtension->GetNewCompletePath());
@@ -157,6 +216,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				std::wstring newMessage = steno->LSBDecode(loadingHelper->m_currentImage->m_bitMap);
 
 				LPCWSTR lpcwstr = newMessage.c_str();
+				SetWindowText(hStatic3, L"");
+				InvalidateRect(hWnd, NULL, TRUE);
 				SetWindowText(hStatic3, lpcwstr);
 
 				DestroyLoadingHelper(hWnd);
