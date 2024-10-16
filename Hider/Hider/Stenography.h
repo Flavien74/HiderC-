@@ -12,7 +12,7 @@ public:
 	~Stenography();
 
 	void LSBEncode(Gdiplus::Bitmap* bitmap, const wchar_t* message);
-	std::string LSBDecode(Gdiplus::Bitmap* Decyphered);
+	std::wstring LSBDecode(Gdiplus::Bitmap* Decyphered);
 
 
 private:

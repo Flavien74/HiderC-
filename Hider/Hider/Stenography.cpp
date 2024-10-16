@@ -72,13 +72,13 @@ void Stenography::LSBEncode(Gdiplus::Bitmap* CypheredBitmap, const wchar_t* mess
 	}
 }
 
-std::string Stenography::LSBDecode(Gdiplus::Bitmap* Decyphered)
+std::wstring Stenography::LSBDecode(Gdiplus::Bitmap* Decyphered)
 {
 	int height = Decyphered->GetHeight();
 	int width = Decyphered->GetWidth();
 
 	char ch = 0;
-	std::string message;
+	std::wstring message;
 
 	int bitCount = 0;
 

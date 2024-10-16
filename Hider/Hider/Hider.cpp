@@ -150,9 +150,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		case BUTTON3_ID:
 		{
-			std::string newMessage = steno->LSBDecode(loadingHelper->m_currentImage->m_bitMap);
-			//SetWindowText(hStatic1, newMessage);
-			//Faire truc
+			std::wstring newMessage = steno->LSBDecode(loadingHelper->m_currentImage->m_bitMap);
+			LPCWSTR lpcwstr = newMessage.c_str();
+			SetWindowText(hStatic3, lpcwstr);
 			break;
 		}
 		}
@@ -196,9 +196,6 @@ LRESULT CALLBACK PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
         break;
     }
     case WM_DESTROY:
-
-        delete imageHelper; 
-        imageHelper = nullptr;
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
