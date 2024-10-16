@@ -1,12 +1,18 @@
 #include "ExtensionHelper.h"
 
 ExtensionHelper::ExtensionHelper() :
-	m_extension()
+	m_extension(L""),
+	m_imageName(L""),
+	m_casePath(L"")
 {
+
 }
 
 ExtensionHelper::~ExtensionHelper()
 {
+	m_extension = L"";
+	m_imageName = L"";
+	m_casePath = L"";
 }
 
 bool ExtensionHelper::SetExtensionByPath(const std::wstring& path)
@@ -28,17 +34,7 @@ bool ExtensionHelper::SetExtensionByPath(const std::wstring& path)
 	return true;
 }
 
-void ExtensionHelper::SetExtensionByString(const std::wstring& extension)
-{
-	m_extension = extension;
-}
-
-const std::wstring ExtensionHelper::GetCompletePath()
-{
-	return m_casePath + m_imageName + m_extension;
-}
-
-const std::wstring ExtensionHelper::GetNewCompletePath(std::wstring suppName)
+const std::wstring ExtensionHelper::GetCompletePath(std::wstring suppName)
 {
 	return m_casePath + m_imageName + suppName + m_extension;
 }

@@ -1,15 +1,21 @@
 #include "ImageHelper.h"
 
-ImageHelper::ImageHelper():
-    m_hBitmap(NULL)
+ImageHelper::ImageHelper() :
+    m_bitMap(nullptr),
+    m_hBitmap(nullptr)
 {
 
 }
 
 ImageHelper::~ImageHelper()
 {
+    if (m_bitMap) {
+        delete m_bitMap;
+        m_bitMap = nullptr;
+    }
     if (m_hBitmap) {
         DeleteObject(m_hBitmap);
+        m_hBitmap = nullptr;
     }
 }
 

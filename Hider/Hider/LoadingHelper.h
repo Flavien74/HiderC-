@@ -14,6 +14,7 @@ public :
 	LoadingHelper();
 	~LoadingHelper();
 
+	bool Init(HWND hWnd);
 	bool OpenImageFile(HWND hWnd);
 	bool LoadImageFromFile();
 

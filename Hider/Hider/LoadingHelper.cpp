@@ -11,12 +11,29 @@ LoadingHelper::LoadingHelper() :
 
 LoadingHelper::~LoadingHelper()
 {
+    if (m_currentImage) {
+        m_currentImage->~ImageHelper();
+        delete m_currentImage;
+        m_currentImage = nullptr;
+    }
+
+    if (m_currentExtension) {
+        m_currentExtension->~ExtensionHelper();
+        delete m_currentExtension;
+        m_currentExtension = nullptr;
+    }
+}
+
+bool LoadingHelper::Init(HWND hWnd)
+{
+    m_currentImage = new ImageHelper();
+    m_currentExtension = new ExtensionHelper();
+
+    return OpenImageFile(hWnd);
 }
 
 bool LoadingHelper::OpenImageFile(HWND hWnd)
 {
-    m_currentImage = new ImageHelper();
-    m_currentExtension = new ExtensionHelper();
     OPENFILENAME ofn;
     wchar_t szFile[260];
 
@@ -88,33 +105,28 @@ bool LoadingHelper::SaveImage(std::wstring newPathName)
         mimeType = L"image/gif";
     }
     else {
-        return false;  // Unsupported format
+        return false;
     }
 
-    // Get the CLSID for the desired format
     CLSID clsid;
     if (GetEncoderClsid(mimeType, &clsid) == -1) {
-        return false;  // Could not get CLSID
+        return false;
     }
 
-    // Save the image
     Status status = m_currentImage->m_bitMap->Save(newPathName.c_str(), &clsid, nullptr);
-
-    return (status == Ok);  // Return true if save is successful
+    return (status == Ok);
 }
 
-// Helper function to get the CLSID of an image encoder (e.g., PNG, JPEG, BMP)
 int LoadingHelper::GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 {
-    UINT num = 0;          // Number of image encoders
-    UINT size = 0;         // Size of the image encoder array in bytes
+    UINT num = 0;
+    UINT size = 0;
 
-    // Get the number and size of the image encoders
     GetImageEncodersSize(&num, &size);
-    if (size == 0) return -1;  // Failure
+    if (size == 0) return -1;
 
     ImageCodecInfo* pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
-    if (pImageCodecInfo == nullptr) return -1;  // Failure
+    if (pImageCodecInfo == nullptr) return -1;
 
     GetImageEncoders(num, size, pImageCodecInfo);
 
@@ -124,10 +136,10 @@ int LoadingHelper::GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
         {
             *pClsid = pImageCodecInfo[i].Clsid;
             free(pImageCodecInfo);
-            return i;  // Success
+            return i;
         }
     }
 
     free(pImageCodecInfo);
-    return -1;  // Failure
+    return -1;
 }
