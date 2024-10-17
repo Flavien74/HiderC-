@@ -3,21 +3,21 @@ class TransformUI
 {
 public:
     TransformUI();
-    TransformUI(int posX, int posY, int width, int height, float ancX, float ancY);
+    TransformUI(float posX, float posY, float width, float height, float ancX, float ancY);
 
-    int getPositionX() const;
-    int getPositionY() const;
+    float getPositionX() const;
+    float getPositionY() const;
     float getAnchorX() const;
     float getAnchorY() const;
-    int getWidth() const;
-    int getHeight() const;
+    float getWidth() const;
+    float getHeight() const;
 
-    void setPosition(int x, int y);
+    void setPosition(float x, float y);
     void setAnchor(float x, float y);
-    void setSize(int width, int height);
+    void setSize(float width, float height);
 
-    int newGetPositionX() const;
-    int newGetPositionY() const;
+    float newGetPositionX() const;
+    float newGetPositionY() const;
 
 private:
     float positionX, positionY;

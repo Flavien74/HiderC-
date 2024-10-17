@@ -148,20 +148,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			MoveWindow(firstWindow, posX, posY, createUI->m_transformWindow->getWidth() - 50, createUI->m_transformWindow->getHeight(), TRUE);
 		}
-		else if (HIWORD(lParam) < (createUI->m_transformWindow->getWidth() - 50))
-		{
-			int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-			int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-			int posY = (screenHeight / 2) - (createUI->m_transformWindow->getHeight() / 2);
-			int posX = (screenWidth / 2) - (createUI->m_transformWindow->getWidth() / 2);
+		//else if (HIWORD(lParam) < (createUI->m_transformWindow->getWidth() - 50))
+		//{
+		//	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+		//	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+		//	int posY = (screenHeight / 2) - (createUI->m_transformWindow->getHeight() / 2);
+		//	int posX = (screenWidth / 2) - (createUI->m_transformWindow->getWidth() / 2);
 
-			MoveWindow(firstWindow, posX, posY, createUI->m_transformWindow->getWidth(), createUI->m_transformWindow->getHeight() - 50, TRUE);
-		}
+		//	MoveWindow(firstWindow, posX, posY, createUI->m_transformWindow->getWidth(), createUI->m_transformWindow->getHeight() - 50, TRUE);
+		//}
 		else {
 			int width = LOWORD(lParam);
 			int height = HIWORD(lParam);
 
-			ResizeWindow();
+			ResizeWindow(width, height);
 		}
 		InvalidateRect(hWnd, NULL, TRUE);
 	}
@@ -478,29 +478,29 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-void ResizeWindow()
+void ResizeWindow(int width, int height)
 {
-	ObjectUI objectUI;
-	objectUI = (*UIObject)[ReturnIndexObject(BUTTON1_ID)];
-	MoveWindow(*objectUI.m_hwnd, 0, objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
+	for (size_t i = 1; i < (*UIObject).size() + 1; i++)
+	{
+		ObjectUI objectUI;
+		objectUI = (*UIObject)[ReturnIndexObject(i)];
+		float ratioX = objectUI.m_transform.getWidth() / createUI->m_transformWindow->getWidth();
+		float ratioY = objectUI.m_transform.getHeight() / createUI->m_transformWindow->getHeight();
 
-	objectUI = (*UIObject)[ReturnIndexObject(BUTTON2_ID)];
-	MoveWindow(*objectUI.m_hwnd, 0, objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
+		float newX = objectUI.m_transform.getPositionX();
+		float newY = objectUI.m_transform.getPositionY();
 
-	objectUI = (*UIObject)[ReturnIndexObject(EDIT_ID)];
-	MoveWindow(*objectUI.m_hwnd, objectUI.m_transform.getPositionX(), objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
+		if (newX != 0)
+		{
+			newX = (objectUI.m_transform.getPositionX() / createUI->m_transformWindow->getWidth()) * width;
+		}		
+		if (newY != 0)
+		{
+			newY = (objectUI.m_transform.getPositionY() / createUI->m_transformWindow->getHeight()) * height;
+		}
 
-	objectUI = (*UIObject)[ReturnIndexObject(TEXT_ID)];
-	MoveWindow(*objectUI.m_hwnd, objectUI.m_transform.getPositionX(), objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
-
-	objectUI = (*UIObject)[ReturnIndexObject(BUTTON3_ID)];
-	MoveWindow(*objectUI.m_hwnd, 0, objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
-
-	objectUI = (*UIObject)[ReturnIndexObject(TEXT3_ID)];
-	MoveWindow(*objectUI.m_hwnd, objectUI.m_transform.getPositionX(), objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
-
-	objectUI = (*UIObject)[ReturnIndexObject(TEXT2_ID)];
-	MoveWindow(*objectUI.m_hwnd, objectUI.m_transform.getPositionX(), objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
+		MoveWindow(*objectUI.m_hwnd, newX, newY, ratioX * width, ratioY * height, TRUE);
+	}
 }
 
 int ReturnIndexObject(int id)
