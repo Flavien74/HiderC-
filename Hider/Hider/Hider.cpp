@@ -48,79 +48,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		ObjectUI object;
 		TransformUI transformBase;
 
-		hBrushTransparent = (HBRUSH)GetStockObject(HOLLOW_BRUSH);  // Transparent background
+		hBrushTransparent = (HBRUSH)GetStockObject(HOLLOW_BRUSH);
 
 		transformBase = TransformUI(0, 0, createUI->m_transformWindow->getWidth() / 2, 50, 0, 0);
 		buttonLoadCase = createUI->CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", &transformBase);
-		if (buttonLoadCase != NULL) {
-			object = ObjectUI(BUTTON1_ID, "Btn1", transformBase, &buttonLoadCase);
-			UIObject->push_back(object);
-		}
-		else {
-			MessageBox(hWnd, L"Failed to create buttonLoadCase!", L"Error", MB_OK | MB_ICONERROR);
-		}
+		object = ObjectUI(BUTTON1_ID, "Btn1", transformBase, &buttonLoadCase);
+		UIObject->push_back(object);
 
 		transformBase.setPosition(createUI->m_transformWindow->getWidth() / 2, transformBase.getPositionY());
 		TextCharRestant = createUI->CreateTextZone(hWnd, TEXT_ID, L"", &transformBase, ES_LEFT);
-		if (TextCharRestant != NULL) {
-			object = ObjectUI(TEXT_ID, "Text1", transformBase, &TextCharRestant);
-			UIObject->push_back(object);
-		}
-		else {
-			MessageBox(hWnd, L"Failed to create TextCharRestant!", L"Error", MB_OK | MB_ICONERROR);
-		}
+		object = ObjectUI(TEXT_ID, "Text1", transformBase, &TextCharRestant);
+		UIObject->push_back(object);
 
 		transformBase.setPosition(0, transformBase.getPositionY() + transformBase.getHeight());
 		buttonSteno = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier un message", &transformBase);
-		if (buttonSteno != NULL) {
-			object = ObjectUI(BUTTON2_ID, "Btn2", transformBase, &buttonSteno);
-			UIObject->push_back(object);
-		}
-		else {
-			MessageBox(hWnd, L"Failed to create buttonSteno!", L"Error", MB_OK | MB_ICONERROR);
-		}
+		object = ObjectUI(BUTTON2_ID, "Btn2", transformBase, &buttonSteno);
+		UIObject->push_back(object);
 
 		transformBase.setPosition(createUI->m_transformWindow->getWidth() / 2, transformBase.getPositionY());
 		hEdit = createUI->CreateInput(hWnd, EDIT_ID, L"Message a cacher", &transformBase);
-		if (hEdit != NULL) {
-			object = ObjectUI(EDIT_ID, "Edit", transformBase, &hEdit);
-			UIObject->push_back(object);
-		}
-		else {
-			MessageBox(hWnd, L"Failed to create hEdit input box!", L"Error", MB_OK | MB_ICONERROR);
-		}
+		object = ObjectUI(EDIT_ID, "Edit", transformBase, &hEdit);
+		UIObject->push_back(object);
 
 		transformBase.setPosition(0, transformBase.getPositionY() + transformBase.getHeight());
 		ButtonReveal = createUI->CreateButton(hWnd, BUTTON3_ID, L"Reveler un message", &transformBase);
-		if (ButtonReveal != NULL) {
-			object = ObjectUI(BUTTON3_ID, "Btn3", transformBase, &ButtonReveal);
-			UIObject->push_back(object);
-		}
-		else {
-			MessageBox(hWnd, L"Failed to create ButtonReveal!", L"Error", MB_OK | MB_ICONERROR);
-		}
+		object = ObjectUI(BUTTON3_ID, "Btn3", transformBase, &ButtonReveal);
+		UIObject->push_back(object);
 
 		transformBase.setPosition(createUI->m_transformWindow->getWidth() / 2, transformBase.getPositionY());
 		TextMessageLabel = createUI->CreateTextZone(hWnd, TEXT3_ID, L"Message cache : ", &transformBase, ES_LEFT);
-		if (TextMessageLabel != NULL) {
-			object = ObjectUI(TEXT3_ID, "Text3", transformBase, &TextMessageLabel);
-			UIObject->push_back(object);
-		}
-		else {
-			MessageBox(hWnd, L"Failed to create TextMessageLabel!", L"Error", MB_OK | MB_ICONERROR);
-		}
+		object = ObjectUI(TEXT3_ID, "Text3", transformBase, &TextMessageLabel);
+		UIObject->push_back(object);
 
 		transformBase.setPosition(0, transformBase.getPositionY() + transformBase.getHeight());
 		transformBase.setSize(createUI->m_transformWindow->getWidth(), transformBase.getHeight());
-
 		TextMessageReturn = createUI->CreateTextZone(hWnd, TEXT2_ID, L"", &transformBase, ES_LEFT);
-		if (TextMessageReturn != NULL) {
-			object = ObjectUI(TEXT2_ID, "Text2", transformBase, &TextMessageReturn);
-			UIObject->push_back(object);
-		}
-		else {
-			MessageBox(hWnd, L"Failed to create TextMessageReturn!", L"Error", MB_OK | MB_ICONERROR);
-		}
+		object = ObjectUI(TEXT2_ID, "Text2", transformBase, &TextMessageReturn);
+		UIObject->push_back(object);
+
 		break;
 	}
 	case WM_CTLCOLORSTATIC:
@@ -148,15 +113,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			MoveWindow(firstWindow, posX, posY, createUI->m_transformWindow->getWidth() - 50, createUI->m_transformWindow->getHeight(), TRUE);
 		}
-		//else if (HIWORD(lParam) < (createUI->m_transformWindow->getWidth() - 50))
-		//{
-		//	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-		//	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-		//	int posY = (screenHeight / 2) - (createUI->m_transformWindow->getHeight() / 2);
-		//	int posX = (screenWidth / 2) - (createUI->m_transformWindow->getWidth() / 2);
-
-		//	MoveWindow(firstWindow, posX, posY, createUI->m_transformWindow->getWidth(), createUI->m_transformWindow->getHeight() - 50, TRUE);
-		//}
 		else {
 			int width = LOWORD(lParam);
 			int height = HIWORD(lParam);
@@ -173,7 +129,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		isEditing = true;
-		switch (LOWORD(wParam)) // Check which control sent the WM_COMMAND message
+		switch (LOWORD(wParam))
 		{
 		case EDIT_ID:
 		{
@@ -184,7 +140,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			
 			if (HIWORD(wParam) == EN_SETFOCUS && !isTextCleared)
 			{
-				// Efface le texte au focus s'il n'a pas déjà été effacé
 				SetWindowText(hEdit, TEXT(""));
 				isTextCleared = true;
 			}
@@ -224,6 +179,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					SetWindowText(TextCharRestant, L"");
 					InvalidateRect(hWnd, NULL, TRUE);
 					SetWindowText(TextCharRestant, buffernumber);
+					InvalidateRect(hWnd, NULL, TRUE);
 				}
 			}
 			break;
@@ -234,20 +190,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			loadingHelper = new LoadingHelper();
 
 			if (loadingHelper->Init(hWnd)) {
+
+				nbCharacterPossible = loadingHelper->m_currentImage->m_bitMap->GetHeight() * loadingHelper->m_currentImage->m_bitMap->GetWidth() * 3;
+				swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
+
+				SetWindowText(TextCharRestant, buffernumber);
 				InvalidateRect(hWnd, NULL, TRUE);
 				RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW);
-				return true;
 			}
 			else {
 				DestroyLoadingHelper(hWnd);
-				return false;
+				break;
 			}
-
-			nbCharacterPossible = loadingHelper->m_currentImage->m_bitMap->GetHeight() * loadingHelper->m_currentImage->m_bitMap->GetWidth() * 3;
-			swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
-
-			SetWindowText(TextCharRestant, buffernumber);
-			//createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper->m_currentImage);
 			break;
 		}
 		case BUTTON2_ID:
@@ -263,13 +217,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 
 			steno->LSBEncode(loadingHelper->m_currentImage->m_bitMap, bufferMessage);
-
 			loadingHelper->SaveImage(loadingHelper->m_currentExtension->GetCompletePath(L"_out"));
-
-			//createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture_Encrypte", PictureWndProc, loadingHelper->m_currentImage);
-			DestroyLoadingHelper(hWnd);
 			InvalidateRect(hWnd, NULL, TRUE);
-			RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW);
 			break;
 		}
 		case BUTTON3_ID:
@@ -289,7 +238,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetWindowText(TextMessageReturn, lpcwstr);
 			DestroyLoadingHelper(hWnd);
 			InvalidateRect(hWnd, NULL, TRUE);
-			RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW);
 
 			break;
 		}
@@ -357,7 +305,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 
 			Graphics* g = Graphics::FromHDC(hdc);
-			g->DrawImage(loadingHelper->m_currentImage->m_bitMap, newWidth / 2, y, newWidth, newHeight);
+			g->DrawImage(loadingHelper->m_currentImage->m_bitMap, (windowWidth / 2 - (newWidth / 2)), y, newWidth, newHeight);
 			delete g;
 		}
 		EndPaint(hWnd, &ps);
