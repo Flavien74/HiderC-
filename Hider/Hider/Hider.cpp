@@ -50,13 +50,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		hBrushTransparent = (HBRUSH)GetStockObject(HOLLOW_BRUSH);
 
-		hbutton1 = createUI->CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", (createUI->baseWindowWidth / 2) - (createUI->buttonWidth / 2), (createUI->baseWindowWidth / 8), createUI->buttonWidth, createUI->buttonHeight);
+		hbutton1 = createUI->CreateButton(hWnd, BUTTON1_ID, L"Ctrl+ L : Choisir un fichier", (createUI->baseWindowWidth / 2) - (createUI->bigButtonWidth / 2), (createUI->baseWindowWidth / 8), createUI->bigButtonWidth, createUI->bigButtonHeight);
 		hStatic1 = createUI->CreateTextZone(hWnd, TEXT_ID, L"", (createUI->baseWindowWidth / 2) + (200 / 2), (createUI->baseWindowWidth / 5), 25, 100, ES_RIGHT);
 		hEdit = createUI->CreateInput(hWnd, EDIT_ID, L"Message a cacher", (createUI->baseWindowWidth / 2) - (250 / 2), (createUI->baseWindowWidth / 4.5), 250, 50);
 
 		//hbutton2 = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", (createUI->baseWindowWidth / 2) - (350 / 2), (createUI->baseWindowWidth / 3), 350, 50);
-		hbutton2 = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier un message", (createUI->baseWindowWidth / 2) - (createUI->bigButtonWidth / 2), (createUI->baseWindowWidth / 3), createUI->bigButtonWidth, createUI->bigButtonHeight);
-		hbutton3 = createUI->CreateButton(hWnd, BUTTON3_ID, L"Reveler un message", (createUI->baseWindowWidth / 2) - (createUI->bigButtonWidth / 2), (createUI->baseWindowWidth / 2.4), createUI->bigButtonWidth, createUI->bigButtonHeight);
+		hbutton2 = createUI->CreateButton(hWnd, BUTTON2_ID, L"Ctrl+ E : Stenographier un message", (createUI->baseWindowWidth / 2) - (createUI->bigButtonWidth / 2), (createUI->baseWindowWidth / 3), createUI->bigButtonWidth, createUI->bigButtonHeight);
+		hbutton3 = createUI->CreateButton(hWnd, BUTTON3_ID, L"Ctrl+ D : Reveler un message", (createUI->baseWindowWidth / 2) - (createUI->bigButtonWidth / 2), (createUI->baseWindowWidth / 2.4), createUI->bigButtonWidth, createUI->bigButtonHeight);
 
 		hStatic2 = createUI->CreateTextZone(hWnd, TEXT3_ID, L"Message cache : ", (createUI->baseWindowWidth / 2) - (200 / 2), (createUI->baseWindowWidth / 1.8), 200, 20, ES_LEFT);
 		hStatic3 = createUI->CreateTextZone(hWnd, TEXT2_ID, L"", (createUI->baseWindowWidth / 2) - (200 / 2), (createUI->baseWindowWidth / 1.75), 200, 20, ES_LEFT);
@@ -101,11 +101,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			int width = LOWORD(lParam);
 			int height = HIWORD(lParam);
 
-			MoveWindow(hbutton1, (width / 2) - (createUI->buttonWidth / 2), (height / 6), createUI->buttonWidth, createUI->buttonHeight, TRUE);
+			MoveWindow(hbutton1, (width / 2) - (createUI->bigButtonWidth / 2), (height / 6), createUI->bigButtonWidth, createUI->bigButtonHeight, TRUE);
 			MoveWindow(hStatic1, (width / 2) - (200 / 2), (height / 3.3), 220, 15, TRUE);
 			MoveWindow(hEdit, (width / 2) - (250 / 2), (height / 3), 250, 50, TRUE);
 			MoveWindow(hbutton2, (width / 2) - (350 / 2), (height / 2), 350, 50, TRUE);
-			MoveWindow(hbutton3, (width / 2) - (createUI->buttonWidth / 2), (height / 1.5), createUI->buttonWidth, createUI->buttonHeight, TRUE);
+			MoveWindow(hbutton3, (width / 2) - (createUI->bigButtonWidth / 2), (height / 1.5), createUI->bigButtonWidth, createUI->bigButtonHeight, TRUE);
 			MoveWindow(hStatic2, (width / 2) - (200 / 2), (height / 1.25), 200, 20, TRUE);
 			MoveWindow(hStatic3, (width / 2) - (200 / 2), (height / 1.2), 200, 20, TRUE);
 		}
@@ -230,7 +230,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		}
-		case 1002:  // ID of the accelerator (Ctrl+M)
+		case 1002:  // ID of the accelerator (Ctrl+E)
 		{
 			HWND hButton = GetDlgItem(hWnd, BUTTON2_ID);
 			if (hButton)
@@ -239,7 +239,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		}
-		case 1003:  // ID of the accelerator (Ctrl+E)
+		case 1003:  // ID of the accelerator (Ctrl+D)
 		{
 			HWND hButton = GetDlgItem(hWnd, BUTTON3_ID);
 			if (hButton)

@@ -14,8 +14,8 @@
 // Déclaration des accélérateurs
 ACCEL accelerators[] = {
     { FVIRTKEY | FCONTROL, 'L', 1001 }, // Ctrl+L
-    { FVIRTKEY | FCONTROL, 'M', 1002 }, // Ctrl+M
-    { FVIRTKEY | FCONTROL, 'E', 1003 }  // Ctrl+E
+    { FVIRTKEY | FCONTROL, 'E', 1002 }, // Ctrl+E
+    { FVIRTKEY | FCONTROL, 'D', 1003 }  // Ctrl+D
 };
 
 class ImageHelper;
