@@ -119,7 +119,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			ResizeWindow(width, height);
 		}
-		InvalidateRect(hWnd, NULL, TRUE);
 	}
 	break;
 	case WM_COMMAND:
@@ -176,8 +175,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					}
 					nbLastCharacter = nbCurrentCharacter;
 					swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
-					SetWindowText(TextCharRestant, L"");
-					InvalidateRect(hWnd, NULL, TRUE);
 					SetWindowText(TextCharRestant, buffernumber);
 					InvalidateRect(hWnd, NULL, TRUE);
 				}
@@ -218,6 +215,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			steno->LSBEncode(loadingHelper->m_currentImage->m_bitMap, bufferMessage);
 			loadingHelper->SaveImage(loadingHelper->m_currentExtension->GetCompletePath(L"_out"));
+
+			SetWindowText(TextCharRestant, TEXT(""));
+			SetWindowText(hEdit, TEXT(""));
+
+			DestroyLoadingHelper(hWnd);
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		}
@@ -229,13 +231,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 
 			std::wstring newMessage = steno->LSBDecode(loadingHelper->m_currentImage->m_bitMap);
-
 			LPCWSTR lpcwstr = newMessage.c_str();
-
-			SetWindowText(TextMessageReturn, L"");
-			InvalidateRect(hWnd, NULL, TRUE);
-
+			SetWindowText(TextMessageReturn, TEXT(""));
 			SetWindowText(TextMessageReturn, lpcwstr);
+
 			DestroyLoadingHelper(hWnd);
 			InvalidateRect(hWnd, NULL, TRUE);
 
@@ -273,8 +272,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	case WM_PAINT:
 	{
-		InvalidateRect(hWnd, NULL, TRUE); // NULL pour redessiner toute la fenêtre, TRUE pour effacer l'arrière-plan
-
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 
@@ -321,7 +318,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		createUI = nullptr;
 		delete steno;
 		steno = nullptr;
-		GdiplusShutdown(gdiplusToken);
+		Gdiplus::GdiplusShutdown(gdiplusToken);
 
 		PostQuitMessage(0);
 		break;
