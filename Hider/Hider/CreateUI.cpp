@@ -49,7 +49,7 @@ HWND CreateUI::CreateInput(HWND hWnd, int input_id, LPCWSTR message, TransformUI
 	HWND hwnd = CreateWindow(
 		L"EDIT",
 		message,
-		WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+		WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL ,
 		transform->getPositionX(),
 		transform->getPositionY(),
 		transform->getWidth(),

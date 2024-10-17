@@ -32,12 +32,12 @@ CreateUI* createUI = nullptr;
 Stenography* steno = nullptr;
 LoadingHelper* loadingHelperDecrytpe = nullptr;
 LoadingHelper* loadingHelperEncrypte = nullptr;
-std::vector<ObjectUI>* UIObject = nullptr;
+std::vector<ObjectUI*>* UIObject = nullptr;
 
 HBRUSH hBrushTransparent = NULL;
 
 HWND firstWindow;
-static HWND buttonLoadCase, buttonLoadCase2, buttonSteno, ButtonReveal, hEdit, hEdit2, TextCharRestant, TextMessageLabel, TextMessageReturn;
+static HWND buttonLoadCase, buttonLoadCase2, buttonSteno, buttonClear, ButtonReveal, hEdit, hEdit2, TextCharRestant;
 HBITMAP hbmMem;
 HDC hdcMem;
 

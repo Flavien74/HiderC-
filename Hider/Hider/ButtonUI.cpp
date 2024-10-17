@@ -13,5 +13,6 @@ ObjectUI::ObjectUI(int id, std::string name, TransformUI& transform, HWND* hwnd)
 	m_id = id;
 	m_name = name;
 	m_transform = transform;
+	m_transformResize = transform;
 	m_hwnd = hwnd;
 }

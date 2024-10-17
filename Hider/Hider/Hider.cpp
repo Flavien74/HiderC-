@@ -17,7 +17,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	steno = new Stenography();
 	loadingHelperDecrytpe = new LoadingHelper();
 	loadingHelperEncrypte = new LoadingHelper();
-	UIObject = new std::vector<ObjectUI>();
+	UIObject = new std::vector<ObjectUI*>();
 
 	firstWindow = createUI->CreateBaseWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp", WndProc);
 
@@ -44,59 +44,49 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 	{
-		ObjectUI object;
+		ObjectUI* object;
 		TransformUI transformBase;
 
 		hBrushTransparent = (HBRUSH)GetStockObject(HOLLOW_BRUSH);
 
 		transformBase = TransformUI(0, 0, createUI->m_transformWindow->getWidth() / 2, 50, 0, 0);
 		buttonLoadCase = createUI->CreateButton(hWnd, BUTTON_LOAD_1, L"Choisir un fichier", &transformBase);
-		object = ObjectUI(BUTTON_LOAD_1, "Btn1", transformBase, &buttonLoadCase);
+		object = new ObjectUI(BUTTON_LOAD_1, "Btn1", transformBase, &buttonLoadCase);
 		UIObject->push_back(object);
 
 		transformBase = TransformUI(createUI->m_transformWindow->getWidth() / 2, 0, createUI->m_transformWindow->getWidth() / 2, 50, 0, 0);
 		buttonLoadCase2 = createUI->CreateButton(hWnd, BUTTON_LOAD_2, L"Choisir un fichier", &transformBase);
-		object = ObjectUI(BUTTON_LOAD_2, "Btn1", transformBase, &buttonLoadCase2);
+		object = new ObjectUI(BUTTON_LOAD_2, "Btn1", transformBase, &buttonLoadCase2);
 		UIObject->push_back(object);
 
-		transformBase = TransformUI(0, createUI->m_transformWindow->getHeight() - 250, createUI->m_transformWindow->getWidth(), 30, 0, 0);
-		TextCharRestant = createUI->CreateButton(hWnd, CLEAR_IMAGE, L"Clear Image", &transformBase);
-		object = ObjectUI(CLEAR_IMAGE, "Clear", transformBase, &TextCharRestant);
+		transformBase = TransformUI(0, createUI->m_transformWindow->getHeight() - 220, createUI->m_transformWindow->getWidth(), 30, 0, 0);
+		buttonClear = createUI->CreateButton(hWnd, CLEAR_IMAGE, L"Clear Image", &transformBase);
+		object = new ObjectUI(CLEAR_IMAGE, "Clear", transformBase, &buttonClear);
 		UIObject->push_back(object);
 
 		transformBase = TransformUI(0, createUI->m_transformWindow->getHeight() - 140, createUI->m_transformWindow->getWidth(), 20, 0, 0);
 		TextCharRestant = createUI->CreateTextZone(hWnd, TEXT_RESTANT_1, L"", &transformBase, ES_LEFT);
-		object = ObjectUI(TEXT_RESTANT_1, "Text1", transformBase, &TextCharRestant);
+		object = new ObjectUI(TEXT_RESTANT_1, "Text1", transformBase, &TextCharRestant);
 		UIObject->push_back(object);
 
 		transformBase = TransformUI(0, createUI->m_transformWindow->getHeight() - 120, createUI->m_transformWindow->getWidth() / 2, 110, 0, 0);
 		hEdit = createUI->CreateInput(hWnd, EDIT_ID_1, L"Message a cacher", &transformBase);
-		object = ObjectUI(EDIT_ID_1, "Edit", transformBase, &hEdit);
+		object = new ObjectUI(EDIT_ID_1, "Edit", transformBase, &hEdit);
 		UIObject->push_back(object);
 
 		transformBase = TransformUI(0, createUI->m_transformWindow->getHeight() - 180, createUI->m_transformWindow->getWidth() / 2, 40, 0, 0);
 		buttonSteno = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier un message", &transformBase);
-		object = ObjectUI(BUTTON2_ID, "Btn2", transformBase, &buttonSteno);
+		object = new ObjectUI(BUTTON2_ID, "Btn2", transformBase, &buttonSteno);
 		UIObject->push_back(object);
 
 		transformBase = TransformUI(createUI->m_transformWindow->getWidth() / 2, createUI->m_transformWindow->getHeight() - 180, createUI->m_transformWindow->getWidth() / 2, 40, 0, 0);
 		ButtonReveal = createUI->CreateButton(hWnd, BUTTON3_ID, L"Reveler un message", &transformBase);
-		object = ObjectUI(BUTTON3_ID, "Btn3", transformBase, &ButtonReveal);
+		object = new ObjectUI(BUTTON3_ID, "Btn3", transformBase, &ButtonReveal);
 		UIObject->push_back(object);
-
-		//transformBase = TransformUI(createUI->m_transformWindow->getWidth() / 2, createUI->m_transformWindow->getHeight() - 75, createUI->m_transformWindow->getWidth() / 2, 25, 0, 0);
-		//TextMessageLabel = createUI->CreateTextZone(hWnd, TEXT3_ID, L"Message cache : ", &transformBase, ES_LEFT);
-		//object = ObjectUI(TEXT3_ID, "Text3", transformBase, &TextMessageLabel);
-		//UIObject->push_back(object);
-
-		//transformBase = TransformUI(createUI->m_transformWindow->getWidth() / 2, createUI->m_transformWindow->getHeight() - 50, createUI->m_transformWindow->getWidth() / 2, 50, 0, 0);
-		//TextMessageReturn = createUI->CreateTextZone(hWnd, TEXT2_ID, L"", &transformBase, ES_LEFT);
-		//object = ObjectUI(TEXT2_ID, "Text2", transformBase, &TextMessageReturn);
-		//UIObject->push_back(object);
 
 		transformBase = TransformUI(createUI->m_transformWindow->getWidth() / 2, createUI->m_transformWindow->getHeight() - 120, createUI->m_transformWindow->getWidth() / 2, 110, 0, 0);
 		hEdit2 = createUI->CreateTextZone(hWnd, EDIT_ID_2, L"", &transformBase, ES_LEFT);
-		object = ObjectUI(EDIT_ID_2, "Text2", transformBase, &hEdit2);
+		object = new ObjectUI(EDIT_ID_2, "Text2", transformBase, &hEdit2);
 		UIObject->push_back(object);
 
 		break;
@@ -206,7 +196,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				nbCharacterPossible = loadingHelperDecrytpe->m_currentImage->m_bitMap->GetHeight() * loadingHelperDecrytpe->m_currentImage->m_bitMap->GetWidth() * 3;
 				swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
 
-				SetWindowText(TextMessageReturn, TEXT(""));
+				SetWindowText(hEdit2, TEXT(""));
 				SetWindowText(TextCharRestant, buffernumber);
 				InvalidateRect(hWnd, NULL, TRUE);
 				RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW);
@@ -253,8 +243,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			SetWindowText(hEdit, L"\0");
 			SetWindowText(TextCharRestant, L"\0");
+			nbCharacterPossible = 0;
 
-			//DestroyLoadingHelper(hWnd);
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		}
@@ -269,23 +259,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			LPCWSTR lpcwstr = newMessage.c_str();
 
 			SetWindowText(TextCharRestant, L"\0");
-			//SetWindowText(TextMessageReturn, TEXT(""));
-			//SetWindowText(TextMessageReturn, lpcwstr);
+			nbCharacterPossible = 0;
+
 			SetWindowText(hEdit2, TEXT(""));
 			SetWindowText(hEdit2, lpcwstr);
 
-			//DestroyLoadingHelper(hWnd, true);
 			InvalidateRect(hWnd, NULL, TRUE);
 
 			break;
 		}
 		case CLEAR_IMAGE:
 		{
+			if (!loadingHelperEncrypte || !loadingHelperDecrytpe) 
+			{
+				MessageBox(hWnd, L"Choisis un fichier comme image !", L"iamge missing", MB_ICONERROR | MB_OK);
+				break;
+			}
 			DestroyLoadingHelper(hWnd);
 			DestroyLoadingHelper(hWnd, true);
 			SetWindowText(hEdit, L"\0");
+			SetWindowText(hEdit2, L"\0");
 			SetWindowText(TextCharRestant, L"\0");
-			SetWindowText(TextMessageReturn, L"\0");
+			nbCharacterPossible = 0;
 			InvalidateRect(hWnd, NULL, TRUE);
 			RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW);
 			break;
@@ -372,24 +367,24 @@ void ResizeWindow(int width, int height)
 {
 	for (size_t i = 0; i < (*UIObject).size(); i++)
 	{
-		ObjectUI objectUI;
-		objectUI = (*UIObject)[i];
-		float ratioX = objectUI.m_transform.getWidth() / createUI->m_transformWindow->getWidth();
-		float ratioY = objectUI.m_transform.getHeight() / createUI->m_transformWindow->getHeight();
+		ObjectUI* objectUI = (*UIObject)[i];
+		float ratioX = objectUI->m_transform.getWidth() / createUI->m_transformWindow->getWidth();
+		float ratioY = objectUI->m_transform.getHeight() / createUI->m_transformWindow->getHeight();
 
-		float newX = objectUI.m_transform.getPositionX();
-		float newY = objectUI.m_transform.getPositionY();
+		float newX = objectUI->m_transform.getPositionX();
+		float newY = objectUI->m_transform.getPositionY();
 
 		if (newX != 0)
 		{
-			newX = (objectUI.m_transform.getPositionX() / createUI->m_transformWindow->getWidth()) * width;
+			newX = (objectUI->m_transform.getPositionX() / createUI->m_transformWindow->getWidth()) * width;
 		}		
 		if (newY != 0)
 		{
-			newY = (objectUI.m_transform.getPositionY() / createUI->m_transformWindow->getHeight()) * height;
+			newY = (objectUI->m_transform.getPositionY() / createUI->m_transformWindow->getHeight()) * height;
 		}
 
-		MoveWindow(*objectUI.m_hwnd, newX, newY, ratioX * width, ratioY * height, TRUE);
+		objectUI->m_transformResize = TransformUI(newX, newY, ratioX * width, ratioY * height, 0, 0);
+		MoveWindow(*objectUI->m_hwnd, newX, newY, ratioX * width, ratioY * height, TRUE);
 	}
 }
 
@@ -397,7 +392,7 @@ int ReturnIndexObject(int id)
 {
 	for (int i = 0; i < UIObject->size(); i++) 
 	{
-		if ((*UIObject)[i].m_id == id) {
+		if ((*UIObject)[i]->m_id == id) {
 			return i;
 		}
 	}
@@ -464,17 +459,18 @@ void DrawScaledImage(HDC hdc, ImageHelper* image, int x, int y, int maxWidth, in
 	}
 
 	float aspectRatio = static_cast<float>(imgWidth) / imgHeight;
-
 	int newWidth = maxWidth;
 	int newHeight = static_cast<int>(newWidth / aspectRatio);
 
 	if (newHeight > availableHeight) {
 		newHeight = availableHeight;
 		newWidth = static_cast<int>(newHeight * aspectRatio);
+		x = x + (maxWidth - newWidth) / 2;
 	}
+	y = y + ((availableHeight - newHeight) / 2);
 
-	Graphics graphics(hdc);
-	graphics.SetSmoothingMode(SmoothingModeAntiAlias);
+	Gdiplus::Graphics graphics(hdc);
+	graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 	graphics.DrawImage(image->m_bitMap, x, y, newWidth, newHeight);
 }
 
@@ -487,35 +483,30 @@ void HandleWM_PAINT(HWND hWnd) {
 	FillRect(hdcMem, &ps.rcPaint, hBrush);
 	DeleteObject(hBrush); 
 
-	// Calcul des hauteurs et positions
-	int ymin = (*UIObject)[ReturnIndexObject(BUTTON_LOAD_1)].m_transform.getPositionY() +
-		(*UIObject)[ReturnIndexObject(BUTTON_LOAD_1)].m_transform.getHeight();
-	int ymax = (*UIObject)[ReturnIndexObject(TEXT_RESTANT_1)].m_transform.getPositionY();
+	int ymin = (*UIObject)[ReturnIndexObject(BUTTON_LOAD_1)]->m_transformResize.getPositionY() +
+		(*UIObject)[ReturnIndexObject(BUTTON_LOAD_1)]->m_transformResize.getHeight();
+	int ymax = (*UIObject)[ReturnIndexObject(CLEAR_IMAGE)]->m_transformResize.getPositionY();
 	int availableHeight = ymax - ymin;
 
-	int imageAreaWidth = (ps.rcPaint.right - ps.rcPaint.left) / 2; // Corrigez la division
+	int imageAreaWidth = (ps.rcPaint.right - ps.rcPaint.left) / 2;
 
 	if (loadingHelperDecrytpe && loadingHelperDecrytpe->m_currentImage) {
-		// Dessiner une image à gauche
-		int xPosition1 = 0; // Centré à gauche
+		int xPosition1 = ((ps.rcPaint.right / 2) - imageAreaWidth) / 2;
 		DrawScaledImage(hdcMem, loadingHelperDecrytpe->m_currentImage, xPosition1, ymin, imageAreaWidth, availableHeight);
 	}
 
 	if (loadingHelperEncrypte && loadingHelperEncrypte->m_currentImage) {
-		// Dessiner une image à droite
-		int xPosition2 = imageAreaWidth; // Centré à droite
+		int xPosition2 = ((ps.rcPaint.right / 2) + imageAreaWidth) / 2;
 		DrawScaledImage(hdcMem, loadingHelperEncrypte->m_currentImage, xPosition2, ymin, imageAreaWidth, availableHeight);
 	}
 
-	// Copier le tampon mémoire sur le HDC de la fenêtre
 	BitBlt(hdc, 0, 0, ps.rcPaint.right - ps.rcPaint.left, ps.rcPaint.bottom - ps.rcPaint.top,
 		hdcMem, 0, 0, SRCCOPY);
 
-	// Nettoyage
-	EndPaint(hWnd, &ps); // Fin du dessin
+	CleanupMemoryDC();
+	EndPaint(hWnd, &ps);
 }
 
-// N'oubliez pas de nettoyer le HDC et le HBITMAP lors de la destruction de la fenêtre
 void CleanupMemoryDC() {
 	DeleteObject(hbmMem);
 	DeleteDC(hdcMem);

@@ -21,9 +21,7 @@ public:
 
 private:
     float positionX, positionY;
-
     float width, height;
-
     float anchorX, anchorY;
 };
 

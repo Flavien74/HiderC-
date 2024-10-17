@@ -14,6 +14,7 @@ public :
 	int m_id;
 	std::string m_name;
 	TransformUI m_transform;
+	TransformUI m_transformResize;
 	HWND* m_hwnd;
 };
 
