@@ -1,5 +1,6 @@
 #pragma once
 
+#include <windows.h>
 #include "resource.h"
 
 #define BUTTON1_ID 1
@@ -9,6 +10,13 @@
 #define TEXT_ID 5
 #define TEXT2_ID 6
 #define TEXT3_ID 7
+
+// Déclaration des accélérateurs
+ACCEL accelerators[] = {
+    { FVIRTKEY | FCONTROL, 'L', 1001 }, // Ctrl+L
+    { FVIRTKEY | FCONTROL, 'M', 1002 }, // Ctrl+M
+    { FVIRTKEY | FCONTROL, 'E', 1003 }  // Ctrl+E
+};
 
 class ImageHelper;
 class CreateUI;

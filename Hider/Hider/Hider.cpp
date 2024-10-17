@@ -19,12 +19,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	loadingHelper = new LoadingHelper();
 	firstWindow = createUI->CreateBaseWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp", WndProc);
 
+	HACCEL hAccelTable = CreateAcceleratorTable(accelerators, sizeof(accelerators) / sizeof(ACCEL));
+
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0)) {
+		TranslateAccelerator(firstWindow, hAccelTable, &msg); // Traite les accélérateurs
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 
+	DestroyAcceleratorTable(hAccelTable);
 	return 0;
 }
 
@@ -217,7 +221,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		}
-		case 1001:  // ID of the accelerator (Ctrl+O)
+		case 1001:  // ID of the accelerator (Ctrl+L)
 		{
 			HWND hButton = GetDlgItem(hWnd, BUTTON1_ID);
 			if (hButton)
@@ -226,7 +230,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		}
-		case 1002:  // ID of the accelerator (Ctrl+O)
+		case 1002:  // ID of the accelerator (Ctrl+M)
 		{
 			HWND hButton = GetDlgItem(hWnd, BUTTON2_ID);
 			if (hButton)
@@ -235,7 +239,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		}
-		case 1003:  // ID of the accelerator (Ctrl+O)
+		case 1003:  // ID of the accelerator (Ctrl+E)
 		{
 			HWND hButton = GetDlgItem(hWnd, BUTTON3_ID);
 			if (hButton)
