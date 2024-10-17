@@ -234,6 +234,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			loadingHelper = new LoadingHelper();
 
 			if (loadingHelper->Init(hWnd)) {
+				InvalidateRect(hWnd, NULL, TRUE);
+				RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW);
 				return true;
 			}
 			else {
@@ -245,10 +247,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
 
 			SetWindowText(TextCharRestant, buffernumber);
-
 			//createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper->m_currentImage);
-			InvalidateRect(hWnd, NULL, TRUE);
-			RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW);
 			break;
 		}
 		case BUTTON2_ID:
@@ -358,7 +357,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 
 			Graphics* g = Graphics::FromHDC(hdc);
-			g->DrawImage(loadingHelper->m_currentImage->m_bitMap, 0, y, newWidth, newHeight);
+			g->DrawImage(loadingHelper->m_currentImage->m_bitMap, newWidth / 2, y, newWidth, newHeight);
 			delete g;
 		}
 		EndPaint(hWnd, &ps);
