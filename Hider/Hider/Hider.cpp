@@ -191,6 +191,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				nbCharacterPossible = loadingHelper->m_currentImage->m_bitMap->GetHeight() * loadingHelper->m_currentImage->m_bitMap->GetWidth() * 3;
 				swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
 
+				SetWindowText(TextMessageReturn, TEXT(""));
 				SetWindowText(TextCharRestant, buffernumber);
 				InvalidateRect(hWnd, NULL, TRUE);
 				RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW);
@@ -216,8 +217,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			steno->LSBEncode(loadingHelper->m_currentImage->m_bitMap, bufferMessage);
 			loadingHelper->SaveImage(loadingHelper->m_currentExtension->GetCompletePath(L"_out"));
 
-			SetWindowText(TextCharRestant, TEXT(""));
-			SetWindowText(hEdit, TEXT(""));
+			SetWindowText(hEdit, L"\0");
+			SetWindowText(TextCharRestant, L"\0");
 
 			DestroyLoadingHelper(hWnd);
 			InvalidateRect(hWnd, NULL, TRUE);
@@ -232,6 +233,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			std::wstring newMessage = steno->LSBDecode(loadingHelper->m_currentImage->m_bitMap);
 			LPCWSTR lpcwstr = newMessage.c_str();
+
+			SetWindowText(TextCharRestant, L"\0");
 			SetWindowText(TextMessageReturn, TEXT(""));
 			SetWindowText(TextMessageReturn, lpcwstr);
 
