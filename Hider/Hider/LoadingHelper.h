@@ -14,8 +14,10 @@ public :
 	LoadingHelper();
 	~LoadingHelper();
 
-	bool Init(HWND hWnd);
-	bool OpenImageFile(HWND hWnd);
+	void Copy(LoadingHelper* toCopy);
+
+	bool Init(HWND hWnd, LPCWSTR title);
+	bool OpenImageFile(HWND hWnd, LPCWSTR& title);
 	bool LoadImageFromFile();
 
 	bool SaveImage(std::wstring newPathName);

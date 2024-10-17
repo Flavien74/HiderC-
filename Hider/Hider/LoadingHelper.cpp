@@ -13,26 +13,32 @@ LoadingHelper::~LoadingHelper()
 {
     if (m_currentImage) {
         m_currentImage->~ImageHelper();
-        delete m_currentImage;
+        //delete m_currentImage;
         m_currentImage = nullptr;
     }
 
     if (m_currentExtension) {
         m_currentExtension->~ExtensionHelper();
-        delete m_currentExtension;
+        //delete m_currentExtension;
         m_currentExtension = nullptr;
     }
 }
 
-bool LoadingHelper::Init(HWND hWnd)
+void LoadingHelper::Copy(LoadingHelper* toCopy)
+{
+    m_currentImage = new ImageHelper(*toCopy->m_currentImage);
+    m_currentExtension = new ExtensionHelper(*toCopy->m_currentExtension);
+}
+
+bool LoadingHelper::Init(HWND hWnd, LPCWSTR title)
 {
     m_currentImage = new ImageHelper();
     m_currentExtension = new ExtensionHelper();
 
-    return OpenImageFile(hWnd);
+    return OpenImageFile(hWnd, title);
 }
 
-bool LoadingHelper::OpenImageFile(HWND hWnd)
+bool LoadingHelper::OpenImageFile(HWND hWnd, LPCWSTR& title)
 {
     OPENFILENAME ofn;
     wchar_t szFile[260];
@@ -48,7 +54,7 @@ bool LoadingHelper::OpenImageFile(HWND hWnd)
     ofn.lpstrFileTitle = NULL;
     ofn.nMaxFileTitle = 0;
     ofn.lpstrInitialDir = NULL;
-    ofn.lpstrTitle = L"Sélectionnez une image";
+    ofn.lpstrTitle = title;
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
 
     if (GetOpenFileName(&ofn)) 
