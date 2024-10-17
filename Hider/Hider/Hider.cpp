@@ -163,6 +163,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			ResizeWindow();
 		}
+		InvalidateRect(hWnd, NULL, TRUE);
 	}
 	break;
 	case WM_COMMAND:
@@ -245,8 +246,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			SetWindowText(TextCharRestant, buffernumber);
 
-			createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper->m_currentImage);
+			//createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper->m_currentImage);
 			InvalidateRect(hWnd, NULL, TRUE);
+			RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW);
 			break;
 		}
 		case BUTTON2_ID:
@@ -265,8 +267,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			loadingHelper->SaveImage(loadingHelper->m_currentExtension->GetCompletePath(L"_out"));
 
-			createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture_Encrypte", PictureWndProc, loadingHelper->m_currentImage);
+			//createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture_Encrypte", PictureWndProc, loadingHelper->m_currentImage);
+			DestroyLoadingHelper(hWnd);
 			InvalidateRect(hWnd, NULL, TRUE);
+			RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW);
 			break;
 		}
 		case BUTTON3_ID:
@@ -284,7 +288,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, TRUE);
 
 			SetWindowText(TextMessageReturn, lpcwstr);
+			DestroyLoadingHelper(hWnd);
 			InvalidateRect(hWnd, NULL, TRUE);
+			RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW);
 
 			break;
 		}
@@ -318,6 +324,48 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	}
+	case WM_PAINT:
+	{
+		InvalidateRect(hWnd, NULL, TRUE); // NULL pour redessiner toute la fenêtre, TRUE pour effacer l'arrière-plan
+
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hWnd, &ps);
+
+		RECT clientRect;
+		GetClientRect(hWnd, &clientRect);
+
+		int windowWidth = clientRect.right - clientRect.left;
+		int windowHeight = clientRect.bottom - clientRect.top;
+
+		Graphics graphics(hdc);
+
+		int y = (*UIObject)[(*UIObject).size() - 1].m_transform.getPositionY() +
+			(*UIObject)[(*UIObject).size() - 1].m_transform.getHeight();
+
+		if (loadingHelper && loadingHelper->m_currentImage && loadingHelper->m_currentImage->m_bitMap)
+		{
+			int imgWidth = loadingHelper->m_currentImage->m_bitMap->GetWidth();
+			int imgHeight = loadingHelper->m_currentImage->m_bitMap->GetHeight();
+
+			float aspectRatio = (float)imgWidth / (float)imgHeight;
+
+			int newWidth = windowWidth;
+			int newHeight = static_cast<int>(newWidth / aspectRatio);
+
+			if (y + newHeight > windowHeight) {
+				newHeight = windowHeight - y;
+				newWidth = static_cast<int>(newHeight * aspectRatio);
+			}
+
+			Graphics* g = Graphics::FromHDC(hdc);
+			g->DrawImage(loadingHelper->m_currentImage->m_bitMap, 0, y, newWidth, newHeight);
+			delete g;
+		}
+		EndPaint(hWnd, &ps);
+		break;
+	}
+
+
 
 	case WM_DESTROY:
 
@@ -337,78 +385,77 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-LRESULT CALLBACK PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	PAINTSTRUCT ps;
-
-    switch (message)
-    {
-	case WM_PAINT:
-	{
-		if (!loadingHelper) 
-		{
-			break;
-		}
-		int x, y = 0;
-		HDC hdc = BeginPaint(hWnd, &ps);
-		
-		RECT clientRect;
-		GetClientRect(hWnd, &clientRect);
-		int windowWidth = clientRect.right - clientRect.left;
-		int windowHeight = clientRect.bottom - clientRect.top;
-		
-		HDC hdcMem = CreateCompatibleDC(hdc);
-		HBITMAP hbmMem = CreateCompatibleBitmap(hdc, windowWidth, windowHeight);
-		HGDIOBJ hOldBitmap = SelectObject(hdcMem, hbmMem);
-
-		HBRUSH hBrush = (HBRUSH)(COLOR_WINDOW + 1);
-		FillRect(hdcMem, &clientRect, hBrush);
-
-		if (loadingHelper->m_currentImage && loadingHelper->m_currentImage->m_bitMap)
-		{
-			int imgWidth = loadingHelper->m_currentImage->m_bitMap->GetWidth();
-			int imgHeight = loadingHelper->m_currentImage->m_bitMap->GetHeight();
-
-			float aspectRatio = (float)imgWidth / (float)imgHeight;
-
-			int newWidth = windowWidth;
-			int newHeight = static_cast<int>(newWidth / aspectRatio);
-
-			if (newHeight > windowHeight) {
-				newHeight = windowHeight;
-				newWidth = static_cast<int>(newHeight * aspectRatio);
-			}
-
-			x = (windowWidth - newWidth) / 2;
-			y = (windowHeight - newHeight) / 2;
-
-			loadingHelper->m_currentImage->Draw(hdcMem, x, y, newWidth, newHeight);
-		}
-
-		BitBlt(hdc, 0, 0, windowWidth, windowHeight, hdcMem, 0, 0, SRCCOPY);
-
-		SelectObject(hdcMem, hOldBitmap);
-		DeleteObject(hbmMem);
-		DeleteDC(hdcMem);
-
-		EndPaint(hWnd, &ps);
-
-		InvalidateRect(hWnd, NULL, TRUE);
-		break;
-	}
-	case WM_SIZE:
-	{
-		InvalidateRect(hWnd, NULL, TRUE);
-		break;
-	}
-	case WM_DESTROY:
-		DestroyLoadingHelper(hWnd);
-		break;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	}
-	return 0;
-}
+//LRESULT CALLBACK PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+//{
+//    switch (message)
+//    {
+//	case WM_PAINT:
+//	{
+//		PAINTSTRUCT ps;
+//		if (!loadingHelper) 
+//		{
+//			break;
+//		}
+//		int x, y = 0;
+//		HDC hdc = BeginPaint(hWnd, &ps);
+//		
+//		RECT clientRect;
+//		GetClientRect(hWnd, &clientRect);
+//		int windowWidth = clientRect.right - clientRect.left;
+//		int windowHeight = clientRect.bottom - clientRect.top;
+//		
+//		HDC hdcMem = CreateCompatibleDC(hdc);
+//		HBITMAP hbmMem = CreateCompatibleBitmap(hdc, windowWidth, windowHeight);
+//		HGDIOBJ hOldBitmap = SelectObject(hdcMem, hbmMem);
+//
+//		HBRUSH hBrush = (HBRUSH)(COLOR_WINDOW + 1);
+//		FillRect(hdcMem, &clientRect, hBrush);
+//
+//		if (loadingHelper->m_currentImage && loadingHelper->m_currentImage->m_bitMap)
+//		{
+//			int imgWidth = loadingHelper->m_currentImage->m_bitMap->GetWidth();
+//			int imgHeight = loadingHelper->m_currentImage->m_bitMap->GetHeight();
+//
+//			float aspectRatio = (float)imgWidth / (float)imgHeight;
+//
+//			int newWidth = windowWidth;
+//			int newHeight = static_cast<int>(newWidth / aspectRatio);
+//
+//			if (newHeight > windowHeight) {
+//				newHeight = windowHeight;
+//				newWidth = static_cast<int>(newHeight * aspectRatio);
+//			}
+//
+//			x = (windowWidth - newWidth) / 2;
+//			y = (windowHeight - newHeight) / 2;
+//
+//			loadingHelper->m_currentImage->Draw(hdcMem, x, y, newWidth, newHeight);
+//		}
+//
+//		BitBlt(hdc, 0, 0, windowWidth, windowHeight, hdcMem, 0, 0, SRCCOPY);
+//
+//		SelectObject(hdcMem, hOldBitmap);
+//		DeleteObject(hbmMem);
+//		DeleteDC(hdcMem);
+//
+//		EndPaint(hWnd, &ps);
+//
+//		InvalidateRect(hWnd, NULL, TRUE);
+//		break;
+//	}
+//	case WM_SIZE:
+//	{
+//		InvalidateRect(hWnd, NULL, TRUE);
+//		break;
+//	}
+//	case WM_DESTROY:
+//		DestroyLoadingHelper(hWnd);
+//		break;
+//	default:
+//		return DefWindowProc(hWnd, message, wParam, lParam);
+//	}
+//	return 0;
+//}
 
 // Gestionnaire de messages pour la boîte de dialogue À propos de.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
