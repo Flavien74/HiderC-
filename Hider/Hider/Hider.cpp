@@ -229,54 +229,63 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		case BUTTON1_ID:
 		{
-			if (CheckAndCreateLoadingHelper(hWnd))
-			{
-				nbCharacterPossible = loadingHelper->m_currentImage->m_bitMap->GetHeight() * loadingHelper->m_currentImage->m_bitMap->GetWidth() * 3;
-				swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
+			DestroyLoadingHelper(hWnd);
+			loadingHelper = new LoadingHelper();
 
-				SetWindowText(TextCharRestant, buffernumber);
-
-				createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper->m_currentImage);
-				InvalidateRect(hWnd, NULL, TRUE);
+			if (loadingHelper->Init(hWnd)) {
+				return true;
 			}
+			else {
+				DestroyLoadingHelper(hWnd);
+				return false;
+			}
+
+			nbCharacterPossible = loadingHelper->m_currentImage->m_bitMap->GetHeight() * loadingHelper->m_currentImage->m_bitMap->GetWidth() * 3;
+			swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
+
+			SetWindowText(TextCharRestant, buffernumber);
+
+			createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper->m_currentImage);
+			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		}
 		case BUTTON2_ID:
 		{
-			if (CheckAndCreateLoadingHelper(hWnd))
-			{
-				GetWindowText(hEdit, bufferMessage, 255);
-				if (bufferMessage[0] == L'\0') {
-					MessageBox(hWnd, L"Ecris un message à cacher dans l'image !", L"message missing", MB_ICONERROR | MB_OK);
-					break;
-				}
-				if (!loadingHelper->m_currentImage) {
-					MessageBox(hWnd, L"Choisis un fichier comme image !", L"iamge missing", MB_ICONERROR | MB_OK);
-					break;
-				}
-				steno->LSBEncode(loadingHelper->m_currentImage->m_bitMap, bufferMessage);
-
-				loadingHelper->SaveImage(loadingHelper->m_currentExtension->GetCompletePath(L"_out"));
-
-				createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture_Encrypte", PictureWndProc, loadingHelper->m_currentImage);
-				InvalidateRect(hWnd, NULL, TRUE);
+			GetWindowText(hEdit, bufferMessage, 255);
+			if (bufferMessage[0] == L'\0') {
+				MessageBox(hWnd, L"Ecris un message à cacher dans l'image !", L"message missing", MB_ICONERROR | MB_OK);
+				break;
 			}
+			if (!loadingHelper || !loadingHelper->m_currentImage) {
+				MessageBox(hWnd, L"Choisis un fichier comme image !", L"iamge missing", MB_ICONERROR | MB_OK);
+				break;
+			}
+
+			steno->LSBEncode(loadingHelper->m_currentImage->m_bitMap, bufferMessage);
+
+			loadingHelper->SaveImage(loadingHelper->m_currentExtension->GetCompletePath(L"_out"));
+
+			createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture_Encrypte", PictureWndProc, loadingHelper->m_currentImage);
+			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		}
 		case BUTTON3_ID:
 		{
-			if (CheckAndCreateLoadingHelper(hWnd)) 
-			{
-				std::wstring newMessage = steno->LSBDecode(loadingHelper->m_currentImage->m_bitMap);
-
-				LPCWSTR lpcwstr = newMessage.c_str();
-				SetWindowText(TextMessageReturn, L"");
-				InvalidateRect(hWnd, NULL, TRUE);
-				SetWindowText(TextMessageReturn, lpcwstr);
-
-				DestroyLoadingHelper(hWnd);
-				InvalidateRect(hWnd, NULL, TRUE);
+			if (!loadingHelper || !loadingHelper->m_currentImage) {
+				MessageBox(hWnd, L"Choisis un fichier comme image !", L"iamge missing", MB_ICONERROR | MB_OK);
+				break;
 			}
+
+			std::wstring newMessage = steno->LSBDecode(loadingHelper->m_currentImage->m_bitMap);
+
+			LPCWSTR lpcwstr = newMessage.c_str();
+
+			SetWindowText(TextMessageReturn, L"");
+			InvalidateRect(hWnd, NULL, TRUE);
+
+			SetWindowText(TextMessageReturn, lpcwstr);
+			InvalidateRect(hWnd, NULL, TRUE);
+
 			break;
 		}
 		case 1001:  // ID of the accelerator (Ctrl+O)
