@@ -1,5 +1,6 @@
 #include "CreateUI.h"
 #include "ImageHelper.h"
+#include "TransformUI.h"
 
 CreateUI::CreateUI(HINSTANCE _hInstance)
 {
@@ -10,46 +11,58 @@ CreateUI::~CreateUI()
 {
 }
 
-HWND CreateUI::CreateButton(HWND hWnd, int button_id, LPCWSTR message, int posX, int posY, int largeur, int longueur)
+HWND CreateUI::CreateButton(HWND hWnd, int button_id, LPCWSTR message, TransformUI* transformPtr)
 {
-	/*HBITMAP hBitmap = (HBITMAP)LoadImage(hInstance, MAKEINTRESOURCE(IDB_BUTTON), IMAGE_BITMAP, 0, 0, LR_DEFAULTCOLOR);
-	if (hBitmap == NULL)
-	{
-		MessageBox(NULL, L"Erreur de chargement de l'image.", L"Erreur", MB_OK | MB_ICONERROR);
-		return 0;
-	}*/
+	// Get button position and size from the TransformUI object
+	int x = transformPtr->getPositionX();
+	int y = transformPtr->getPositionY();
+	int width = transformPtr->getWidth();
+	int height = transformPtr->getHeight();
 
-	return CreateWindow(
-		L"BUTTON",
-		message,
-		SS_LEFT | WS_VISIBLE | WS_CHILD,
-		posX,
-		posY,
-		largeur,
-		longueur,
-		hWnd,
-		(HMENU)button_id,
-		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-		NULL);
+	// Create the button control
+	HWND hwndButton = CreateWindow(
+		L"BUTTON",               // Predefined class for buttons
+		message,                 // Button text (label)
+		WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, // Styles for visibility, child, and push button
+		x,                       // X position
+		y,                       // Y position
+		width,                   // Button width
+		height,                  // Button height
+		hWnd,                    // Parent window
+		(HMENU)button_id,        // Button ID for handling events
+		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), // Instance handle
+		NULL                     // No additional data
+	);
+
+	// Check if button creation succeeded
+	if (hwndButton == NULL)
+	{
+		MessageBox(NULL, L"Button Creation Failed!", L"Error", MB_OK | MB_ICONERROR);
+		return NULL;
+	}
+
+	return hwndButton; // Return handle to the button
 }
 
-HWND CreateUI::CreateInput(HWND hWnd, int input_id, LPCWSTR message, int posX, int posY, int largeur, int longueur)
+HWND CreateUI::CreateInput(HWND hWnd, int input_id, LPCWSTR message, TransformUI* transform)
 {
-	return CreateWindow(
+	HWND hwnd = CreateWindow(
 		L"EDIT",
 		message,
 		WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
-		posX,
-		posY,
-		largeur,    
-		longueur,
+		transform->getPositionX(),
+		transform->getPositionY(),
+		transform->getWidth(),
+		transform->getHeight(),
 		hWnd,              
 		(HMENU)input_id,
 		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
 		NULL);
+
+	return hwnd;
 }
 
-HWND CreateUI::CreateBaseWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName, WNDPROC func, ImageHelper* helper)
+HWND CreateUI::CreateBaseWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassName, LPCWSTR WindowName, WNDPROC func)
 {
 	HBRUSH hBrushBG = CreateSolidBrush(RGB(173, 216, 230));
 
@@ -61,31 +74,26 @@ HWND CreateUI::CreateBaseWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR Class
 
 	RegisterClass(&wc);
 
-	LONG longueur = baseWindowWidth;
-	LONG largeur = baseWindowHeight;
+	LONG longueur = m_transformWindow->getWidth();
+	LONG largeur = m_transformWindow->getHeight();
 
 	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-	int posX = (screenWidth / 2) - (baseWindowWidth / 2);
-	int posY = (screenHeight / 2) - (baseWindowHeight / 2);
+	int posX = (screenWidth / 2) - (m_transformWindow->getWidth() / 2);
+	int posY = (screenHeight / 2) - (m_transformWindow->getHeight() / 2);
 
 	HWND hWnd = CreateWindowEx(
 		0,
 		ClassName,
 		WindowName,
 		WS_OVERLAPPEDWINDOW,
-		posX, posY, baseWindowWidth, baseWindowHeight,
+		posX, posY, m_transformWindow->getWidth(), m_transformWindow->getHeight(),
 		NULL,
 		NULL,
 		hInstance,
 		NULL
 	);
-
-	if (helper != nullptr)
-	{
-		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)helper);
-	}
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -128,18 +136,20 @@ HWND CreateUI::CreateAWindow(HINSTANCE hInstance, int nCmdShow, LPCWSTR ClassNam
 	return hWnd;
 }
 
-HWND CreateUI::CreateTextZone(HWND hWnd, int input_id, LPCWSTR message, int posX, int posY, int largeur, int longueur, long Align)
+HWND CreateUI::CreateTextZone(HWND hWnd, int input_id, LPCWSTR message, TransformUI* transform, long Align)
 {
-	return CreateWindow(
+	HWND hwnd = CreateWindow(
 		L"STATIC",
 		message,
 		WS_CHILD | WS_VISIBLE | Align,
-		posX,
-		posY,
-		largeur,
-		longueur,
+		transform->getPositionX(),
+		transform->getPositionY(),
+		transform->getWidth(),
+		transform->getHeight(),
 		hWnd,
 		(HMENU)input_id,
 		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
 		NULL);
+
+	return hwnd;
 }

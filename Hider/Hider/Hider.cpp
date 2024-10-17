@@ -7,7 +7,6 @@
 #include "LoadingHelper.h"
 #include "Stenography.h"
 
-#include <vector>
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -17,6 +16,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	createUI = new CreateUI(hInstance);
 	steno = new Stenography();
 	loadingHelper = new LoadingHelper();
+	UIObject = new std::vector<ObjectUI>();
+
 	firstWindow = createUI->CreateBaseWindow(hInstance, nCmdShow, L"HiderApp", L"HiderApp", WndProc);
 
 	MSG msg;
@@ -30,33 +31,96 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	static HWND hbutton1, hbutton2, hbutton3, hEdit, hStatic1, hStatic2, hStatic3;
+	static HWND buttonLoadCase, buttonSteno, ButtonReveal, hEdit, TextCharRestant, TextMessageLabel, TextMessageReturn;
 
 	static bool isTextCleared = false;
 	static bool isFirstChange = true;
 	static bool isEditing = false;;
 
-	GdiplusStartupInput gdiplusStartupInput;
-	ULONG_PTR gdiplusToken;
-	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+    GdiplusStartupInput gdiplusStartupInput;
+    ULONG_PTR gdiplusToken;
+    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
 	switch (message)
 	{
 	case WM_CREATE:
 	{
-		hBrushTransparent = (HBRUSH)GetStockObject(HOLLOW_BRUSH);
+		ObjectUI object;
+		TransformUI transformBase;
 
-		hbutton1 = createUI->CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", (createUI->baseWindowWidth / 2) - (createUI->buttonWidth / 2), (createUI->baseWindowWidth / 8), createUI->buttonWidth, createUI->buttonHeight);
-		hStatic1 = createUI->CreateTextZone(hWnd, TEXT_ID, L"", (createUI->baseWindowWidth / 2) + (200 / 2), (createUI->baseWindowWidth / 5), 25, 100, ES_RIGHT);
-		hEdit = createUI->CreateInput(hWnd, EDIT_ID, L"Message a cacher", (createUI->baseWindowWidth / 2) - (250 / 2), (createUI->baseWindowWidth / 4.5), 250, 50);
+		hBrushTransparent = (HBRUSH)GetStockObject(HOLLOW_BRUSH);  // Transparent background
 
-		//hbutton2 = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier le message", (createUI->baseWindowWidth / 2) - (350 / 2), (createUI->baseWindowWidth / 3), 350, 50);
-		hbutton2 = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier un message", (createUI->baseWindowWidth / 2) - (createUI->bigButtonWidth / 2), (createUI->baseWindowWidth / 3), createUI->bigButtonWidth, createUI->bigButtonHeight);
-		hbutton3 = createUI->CreateButton(hWnd, BUTTON3_ID, L"Reveler un message", (createUI->baseWindowWidth / 2) - (createUI->bigButtonWidth / 2), (createUI->baseWindowWidth / 2.4), createUI->bigButtonWidth, createUI->bigButtonHeight);
+		transformBase = TransformUI(0, 0, createUI->m_transformWindow->getWidth() / 2, 50, 0, 0);
+		buttonLoadCase = createUI->CreateButton(hWnd, BUTTON1_ID, L"Choisir un fichier", &transformBase);
+		if (buttonLoadCase != NULL) {
+			object = ObjectUI(BUTTON1_ID, "Btn1", transformBase, &buttonLoadCase);
+			UIObject->push_back(object);
+		}
+		else {
+			MessageBox(hWnd, L"Failed to create buttonLoadCase!", L"Error", MB_OK | MB_ICONERROR);
+		}
 
-		hStatic2 = createUI->CreateTextZone(hWnd, TEXT3_ID, L"Message cache : ", (createUI->baseWindowWidth / 2) - (200 / 2), (createUI->baseWindowWidth / 1.8), 200, 20, ES_LEFT);
-		hStatic3 = createUI->CreateTextZone(hWnd, TEXT2_ID, L"", (createUI->baseWindowWidth / 2) - (200 / 2), (createUI->baseWindowWidth / 1.75), 200, 20, ES_LEFT);
+		transformBase.setPosition(createUI->m_transformWindow->getWidth() / 2, transformBase.getPositionY());
+		TextCharRestant = createUI->CreateTextZone(hWnd, TEXT_ID, L"", &transformBase, ES_LEFT);
+		if (TextCharRestant != NULL) {
+			object = ObjectUI(TEXT_ID, "Text1", transformBase, &TextCharRestant);
+			UIObject->push_back(object);
+		}
+		else {
+			MessageBox(hWnd, L"Failed to create TextCharRestant!", L"Error", MB_OK | MB_ICONERROR);
+		}
 
+		transformBase.setPosition(0, transformBase.getPositionY() + transformBase.getHeight());
+		buttonSteno = createUI->CreateButton(hWnd, BUTTON2_ID, L"Stenographier un message", &transformBase);
+		if (buttonSteno != NULL) {
+			object = ObjectUI(BUTTON2_ID, "Btn2", transformBase, &buttonSteno);
+			UIObject->push_back(object);
+		}
+		else {
+			MessageBox(hWnd, L"Failed to create buttonSteno!", L"Error", MB_OK | MB_ICONERROR);
+		}
+
+		transformBase.setPosition(createUI->m_transformWindow->getWidth() / 2, transformBase.getPositionY());
+		hEdit = createUI->CreateInput(hWnd, EDIT_ID, L"Message a cacher", &transformBase);
+		if (hEdit != NULL) {
+			object = ObjectUI(EDIT_ID, "Edit", transformBase, &hEdit);
+			UIObject->push_back(object);
+		}
+		else {
+			MessageBox(hWnd, L"Failed to create hEdit input box!", L"Error", MB_OK | MB_ICONERROR);
+		}
+
+		transformBase.setPosition(0, transformBase.getPositionY() + transformBase.getHeight());
+		ButtonReveal = createUI->CreateButton(hWnd, BUTTON3_ID, L"Reveler un message", &transformBase);
+		if (ButtonReveal != NULL) {
+			object = ObjectUI(BUTTON3_ID, "Btn3", transformBase, &ButtonReveal);
+			UIObject->push_back(object);
+		}
+		else {
+			MessageBox(hWnd, L"Failed to create ButtonReveal!", L"Error", MB_OK | MB_ICONERROR);
+		}
+
+		transformBase.setPosition(createUI->m_transformWindow->getWidth() / 2, transformBase.getPositionY());
+		TextMessageLabel = createUI->CreateTextZone(hWnd, TEXT3_ID, L"Message cache : ", &transformBase, ES_LEFT);
+		if (TextMessageLabel != NULL) {
+			object = ObjectUI(TEXT3_ID, "Text3", transformBase, &TextMessageLabel);
+			UIObject->push_back(object);
+		}
+		else {
+			MessageBox(hWnd, L"Failed to create TextMessageLabel!", L"Error", MB_OK | MB_ICONERROR);
+		}
+
+		transformBase.setPosition(0, transformBase.getPositionY() + transformBase.getHeight());
+		transformBase.setSize(createUI->m_transformWindow->getWidth(), transformBase.getHeight());
+
+		TextMessageReturn = createUI->CreateTextZone(hWnd, TEXT2_ID, L"", &transformBase, ES_LEFT);
+		if (TextMessageReturn != NULL) {
+			object = ObjectUI(TEXT2_ID, "Text2", transformBase, &TextMessageReturn);
+			UIObject->push_back(object);
+		}
+		else {
+			MessageBox(hWnd, L"Failed to create TextMessageReturn!", L"Error", MB_OK | MB_ICONERROR);
+		}
 		break;
 	}
 	case WM_CTLCOLORSTATIC:
@@ -75,35 +139,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	case WM_SIZE:
 	{
-		if (LOWORD(lParam) < (createUI->baseWindowWidth - 50))
+		if (LOWORD(lParam) < (createUI->m_transformWindow->getWidth() - 50))
 		{
 			int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 			int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-			int posY = (screenHeight / 2) - (createUI->baseWindowHeight / 2);
-			int posX = (screenWidth / 2) - (createUI->baseWindowWidth / 2);
+			int posY = (screenHeight / 2) - (createUI->m_transformWindow->getHeight() / 2);
+			int posX = (screenWidth / 2) - (createUI->m_transformWindow->getWidth() / 2);
 
-			MoveWindow(firstWindow, posX, posY, createUI->baseWindowWidth - 50, createUI->baseWindowHeight, TRUE);
+			MoveWindow(firstWindow, posX, posY, createUI->m_transformWindow->getWidth() - 50, createUI->m_transformWindow->getHeight(), TRUE);
 		}
-		else if (HIWORD(lParam) < (createUI->baseWindowHeight - 50))
+		else if (HIWORD(lParam) < (createUI->m_transformWindow->getWidth() - 50))
 		{
 			int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 			int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-			int posY = (screenHeight / 2) - (createUI->baseWindowHeight / 2);
-			int posX = (screenWidth / 2) - (createUI->baseWindowWidth / 2);
+			int posY = (screenHeight / 2) - (createUI->m_transformWindow->getHeight() / 2);
+			int posX = (screenWidth / 2) - (createUI->m_transformWindow->getWidth() / 2);
 
-			MoveWindow(firstWindow, posX, posY, createUI->baseWindowWidth, createUI->baseWindowHeight - 50, TRUE);
+			MoveWindow(firstWindow, posX, posY, createUI->m_transformWindow->getWidth(), createUI->m_transformWindow->getHeight() - 50, TRUE);
 		}
 		else {
 			int width = LOWORD(lParam);
 			int height = HIWORD(lParam);
 
-			MoveWindow(hbutton1, (width / 2) - (createUI->buttonWidth / 2), (height / 6), createUI->buttonWidth, createUI->buttonHeight, TRUE);
-			MoveWindow(hStatic1, (width / 2) - (200 / 2), (height / 3.3), 220, 15, TRUE);
-			MoveWindow(hEdit, (width / 2) - (250 / 2), (height / 3), 250, 50, TRUE);
-			MoveWindow(hbutton2, (width / 2) - (350 / 2), (height / 2), 350, 50, TRUE);
-			MoveWindow(hbutton3, (width / 2) - (createUI->buttonWidth / 2), (height / 1.5), createUI->buttonWidth, createUI->buttonHeight, TRUE);
-			MoveWindow(hStatic2, (width / 2) - (200 / 2), (height / 1.25), 200, 20, TRUE);
-			MoveWindow(hStatic3, (width / 2) - (200 / 2), (height / 1.2), 200, 20, TRUE);
+			ResizeWindow();
 		}
 	}
 	break;
@@ -118,6 +176,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 		case EDIT_ID:
 		{
+			if (ReturnIndexObject(EDIT_ID) == -1 || ReturnIndexObject(TEXT_ID) == -1) 
+			{
+				break;
+			}
 			
 			if (HIWORD(wParam) == EN_SETFOCUS && !isTextCleared)
 			{
@@ -158,9 +220,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					}
 					nbLastCharacter = nbCurrentCharacter;
 					swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
-					SetWindowText(hStatic1, L"");
+					SetWindowText(TextCharRestant, L"");
 					InvalidateRect(hWnd, NULL, TRUE);
-					SetWindowText(hStatic1, buffernumber);
+					SetWindowText(TextCharRestant, buffernumber);
 				}
 			}
 			break;
@@ -172,7 +234,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				nbCharacterPossible = loadingHelper->m_currentImage->m_bitMap->GetHeight() * loadingHelper->m_currentImage->m_bitMap->GetWidth() * 3;
 				swprintf(buffernumber, nbCharacterPossible, L"%d", nbCharacterPossible);
 
-				SetWindowText(hStatic1, buffernumber);
+				SetWindowText(TextCharRestant, buffernumber);
 
 				createUI->CreateAWindow(GetModuleHandle(NULL), SW_SHOW, L"PictureClass", L"Picture", PictureWndProc, loadingHelper->m_currentImage);
 				InvalidateRect(hWnd, NULL, TRUE);
@@ -208,9 +270,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				std::wstring newMessage = steno->LSBDecode(loadingHelper->m_currentImage->m_bitMap);
 
 				LPCWSTR lpcwstr = newMessage.c_str();
-				SetWindowText(hStatic3, L"");
+				SetWindowText(TextMessageReturn, L"");
 				InvalidateRect(hWnd, NULL, TRUE);
-				SetWindowText(hStatic3, lpcwstr);
+				SetWindowText(TextMessageReturn, lpcwstr);
 
 				DestroyLoadingHelper(hWnd);
 				InvalidateRect(hWnd, NULL, TRUE);
@@ -358,6 +420,44 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	return (INT_PTR)FALSE;
 }
+
+
+void ResizeWindow()
+{
+	ObjectUI objectUI;
+	objectUI = (*UIObject)[ReturnIndexObject(BUTTON1_ID)];
+	MoveWindow(*objectUI.m_hwnd, 0, objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
+
+	objectUI = (*UIObject)[ReturnIndexObject(BUTTON2_ID)];
+	MoveWindow(*objectUI.m_hwnd, 0, objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
+
+	objectUI = (*UIObject)[ReturnIndexObject(EDIT_ID)];
+	MoveWindow(*objectUI.m_hwnd, objectUI.m_transform.getPositionX(), objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
+
+	objectUI = (*UIObject)[ReturnIndexObject(TEXT_ID)];
+	MoveWindow(*objectUI.m_hwnd, objectUI.m_transform.getPositionX(), objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
+
+	objectUI = (*UIObject)[ReturnIndexObject(BUTTON3_ID)];
+	MoveWindow(*objectUI.m_hwnd, 0, objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
+
+	objectUI = (*UIObject)[ReturnIndexObject(TEXT3_ID)];
+	MoveWindow(*objectUI.m_hwnd, objectUI.m_transform.getPositionX(), objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
+
+	objectUI = (*UIObject)[ReturnIndexObject(TEXT2_ID)];
+	MoveWindow(*objectUI.m_hwnd, objectUI.m_transform.getPositionX(), objectUI.m_transform.getPositionY(), objectUI.m_transform.getWidth(), objectUI.m_transform.getHeight(), TRUE);
+}
+
+int ReturnIndexObject(int id)
+{
+	for (int i = 0; i < UIObject->size(); i++) 
+	{
+		if ((*UIObject)[i].m_id == id) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 
 bool CheckAndCreateLoadingHelper(HWND hWnd)
 {

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "resource.h"
+#include <vector>
+#include "ButtonUI.h"
 
 #define BUTTON1_ID 1
 #define BUTTON2_ID 2
@@ -25,6 +27,7 @@ static bool isTextCleared = false;
 CreateUI* createUI = nullptr;
 Stenography* steno = nullptr;
 LoadingHelper* loadingHelper = nullptr;
+std::vector<ObjectUI>* UIObject = nullptr;
 
 HBRUSH hBrushTransparent = NULL;
 
@@ -33,6 +36,10 @@ HWND firstWindow;
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK    PictureWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+void ResizeWindow();
+
+int ReturnIndexObject(int id);
 
 bool CheckAndCreateLoadingHelper(HWND hWnd);
 void DestroyLoadingHelper(HWND hWnd);
