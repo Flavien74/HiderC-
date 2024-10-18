@@ -141,6 +141,8 @@ void InitializeUI(HWND* hWnd)
 	hEdit2 = createUI->CreateTextZone(*hWnd, EDIT_ID_2, L"Message retourne :", &transformBase, ES_LEFT);
 	object = new ObjectUI(EDIT_ID_2, "TextReturn", transformBase, &hEdit2);
 	UIObject->push_back(object);
+
+	hLogWnd = createUI->CreateLogWindow(hWnd);
 }
 
 
@@ -212,9 +214,11 @@ void HandleStenography(HWND* hWnd, HWND* hEdit, wchar_t* bufferMessage) {
 		return;
 	}
 
+	AddLogMessage(L"Stenographie du message dans l'image en cours.\n");
 	steno->LSBEncode(loadingHelperDecrytpe->m_currentImage->m_bitMap, bufferMessage);
 
 	if (loadingHelperDecrytpe->SaveImage(loadingHelperDecrytpe->m_currentExtension->GetCompletePath(L"_out"))) {
+		AddLogMessage(L"Image enregistre.\n");
 		MessageBox(*hWnd, L"Fichier bien enregistre !", L"Saving image", MB_ICONINFORMATION | MB_OK);
 	}
 
@@ -251,6 +255,8 @@ void HandleRevealMessage(HWND* hWnd, HWND* hEdit2) {
 
 	SetWindowText(GetDlgItem(*hWnd, TEXT_RESTANT_1), L"\0"); // Clear character count
 	InvalidateRect(*hWnd, NULL, TRUE);
+
+	AddLogMessage(L"Message revele.\n");
 }
 
 
@@ -266,9 +272,11 @@ void HandleClearImage(HWND* hWnd, HWND* hEdit, HWND* hEdit2)
 	InvalidateRect(*hWnd, NULL, TRUE);
 
 	if (!loadingHelperEncrypte && !loadingHelperDecrytpe) {
-		MessageBox(*hWnd, L"Toutes les images sont nettoyer !", L"image missing", MB_ICONERROR | MB_OK);
+		MessageBox(*hWnd, L"Toutes les images sont nettoyees !", L"image missing", MB_ICONERROR | MB_OK);
 		return;
 	}
+
+	AddLogMessage(L"Image(s) nettoyee(s).\n");
 
 	DestroyLoadingHelper(hWnd);
 	DestroyLoadingHelper(hWnd, true);
@@ -357,6 +365,7 @@ void UpdateTextRemaining(HWND* hWnd, HWND* hEdit, HWND TextCharRestant, int& nbC
 
 void HandleLoadButton1(HWND* hWnd)
 {
+	AddLogMessage(L"Choix de l'image en cours.\n");
 	DestroyLoadingHelper(hWnd);
 	loadingHelperDecrytpe = new LoadingHelper();
 
@@ -368,6 +377,8 @@ void HandleLoadButton1(HWND* hWnd)
 		SetWindowText(hEdit2, TEXT(""));
 		SetWindowText(TextCharRestant, buffernumber);
 		InvalidateRect(*hWnd, NULL, TRUE);
+
+		AddLogMessage(L"Image chargee avec succes.\n");
 	}
 	else
 	{
@@ -377,12 +388,14 @@ void HandleLoadButton1(HWND* hWnd)
 
 void HandleLoadButton2(HWND* hWnd)
 {
+	AddLogMessage(L"Choix de l'image stenographie en cours.\n");
 	DestroyLoadingHelper(hWnd, true);
 	loadingHelperEncrypte = new LoadingHelper();
 
-	if (loadingHelperEncrypte->Init(*hWnd, L"Sélectionnez une image steganographiee"))
+	if (loadingHelperEncrypte->Init(*hWnd, L"Selectionnez une image steganographiee"))
 	{
 		InvalidateRect(*hWnd, NULL, TRUE);
+		AddLogMessage(L"Image stenographiee chargee avec succes.\n");
 	}
 	else
 	{
@@ -453,6 +466,8 @@ void ResizeWindow(int width, int height)
 
 		objectUI->m_transformResize = TransformUI(newX, newY, ratioX * width, ratioY * height, 0, 0);
 		MoveWindow(*objectUI->m_hwnd, newX, newY, ratioX * width, ratioY * height, TRUE);
+
+		//AddLogMessage(L"Redimension de la fenetre, succes.\n");
 	}
 }
 
@@ -471,8 +486,8 @@ void Cleanup(HWND* hWnd, ULONG_PTR gdiplusToken)
 		steno = nullptr;
 	}
 
+	AddLogMessage(L"Quitter l'application avec succes.\n");
 	Gdiplus::GdiplusShutdown(gdiplusToken);
-
 	PostQuitMessage(0);
 }
 
@@ -538,6 +553,14 @@ void CleanupMemoryDC() {
 	DeleteDC(hdcMem);
 }
 
+void AddLogMessage(const wchar_t* message)
+{
+    int len = GetWindowTextLength(hLogWnd);
+    SendMessage(hLogWnd, EM_SETSEL, len, len);  // Placer le curseur à la fin
+    SendMessage(hLogWnd, EM_REPLACESEL, TRUE, (LPARAM)message);  // Ajouter le message
+    SendMessage(hLogWnd, EM_REPLACESEL, TRUE, (LPARAM)L"\n");  // Ajouter une nouvelle ligne
+    SendMessage(hLogWnd, WM_VSCROLL, SB_BOTTOM, 0);  // Faire défiler vers le bas
+}
 
 int ReturnIndexObject(int id)
 {

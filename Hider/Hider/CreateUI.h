@@ -21,5 +21,6 @@ public:
 	HWND CreateAWindow(HINSTANCE, int, LPCWSTR, LPCWSTR, WNDPROC, ImageHelper* = nullptr);
 
 	HWND CreateTextZone(HWND hWnd, int input_id, LPCWSTR message, TransformUI* transform, long Align);
+	HWND CreateLogWindow(HWND* hWnd);
 };
 

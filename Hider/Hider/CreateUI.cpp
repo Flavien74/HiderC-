@@ -153,3 +153,21 @@ HWND CreateUI::CreateTextZone(HWND hWnd, int input_id, LPCWSTR message, Transfor
 
 	return hwnd;
 }
+
+HWND CreateUI::CreateLogWindow(HWND* hWnd)
+{
+	HWND hLogWnd = CreateWindowEx(
+		WS_EX_CLIENTEDGE,
+		L"EDIT",  // Utiliser un contrôle d'édition pour le log
+		L"",      // Texte initial
+		WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE,
+		CW_USEDEFAULT, CW_USEDEFAULT, 400, 300,  // Taille par défaut
+		nullptr,  // Pas de parent, c'est une nouvelle fenêtre
+		nullptr,
+		hInstance,
+		nullptr
+	);
+
+	SendMessage(hLogWnd, WM_SETTEXT, 0, (LPARAM)L"Logs:\n");
+	return hLogWnd;
+}

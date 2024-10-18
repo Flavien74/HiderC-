@@ -45,7 +45,7 @@ std::vector<ObjectUI*>* UIObject = nullptr;
 HBRUSH hBrushTransparent = (HBRUSH)GetStockObject(DKGRAY_BRUSH);
 
 HWND firstWindow;
-static HWND buttonLoadCase, buttonLoadCase2, buttonSteno, buttonClear, ButtonReveal, hEdit, hEdit2, TextCharRestant;
+static HWND buttonLoadCase, buttonLoadCase2, buttonSteno, buttonClear, ButtonReveal, hEdit, hEdit2, TextCharRestant, hLogWnd;
 HBITMAP hbmMem;
 HDC hdcMem;
 
@@ -82,5 +82,7 @@ void DestroyLoadingHelper(HWND* hWnd, bool isEncrypt = false);
 void CreateMemoryDC(HWND* hWnd);
 void DrawScaledImage(HDC hdc, ImageHelper* image, int x, int y, int maxWidth, int availableHeight);
 void CleanupMemoryDC();
+
+void AddLogMessage(const wchar_t* message);
 
 int ReturnIndexObject(int id);
