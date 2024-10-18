@@ -57,7 +57,7 @@ void InitializeUI(HWND* hWnd);
 
 void HandleCommand(HWND* hWnd, WPARAM wParam, LPARAM lParam);
 
-HBRUSH HandleCtlColorStatic(WPARAM wParam, LPARAM lParam, HBRUSH hBrushTransparent);
+HBRUSH HandleCtlColorStatic(WPARAM wParam, LPARAM lParam, HBRUSH hBrushTransparent, HWND);
 
 void HandleStenography(HWND* hWnd, HWND* hEdit, wchar_t* bufferMessage);
 void HandleRevealMessage(HWND* hWnd, HWND* hEdit2);

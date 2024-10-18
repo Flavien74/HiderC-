@@ -37,7 +37,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static bool isEditing = false;
-
+	HWND hStatic = (HWND)lParam;
 	GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
 	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
@@ -49,7 +49,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CTLCOLORSTATIC:
-		return (INT_PTR)HandleCtlColorStatic(wParam, lParam, hBrushTransparent);
+		if (hStatic == TextCharRestant) {
+			return (INT_PTR)HandleCtlColorStatic(wParam, lParam, hBrushTransparent, hStatic);
+		}
+		break;
 
 	case WM_SIZE:
 		HandleResize(&hWnd, lParam);  // Handle resizing logic
@@ -135,7 +138,7 @@ void InitializeUI(HWND* hWnd)
 	UIObject->push_back(object);
 
 	transformBase = TransformUI((createUI->m_transformWindow->getWidth() / 2) + 1, createUI->m_transformWindow->getHeight() - 120, (createUI->m_transformWindow->getWidth() / 2) - 2, 110, 0, 0);
-	hEdit2 = createUI->CreateInput(*hWnd, EDIT_ID_2, L"Message retourne :", &transformBase);
+	hEdit2 = createUI->CreateTextZone(*hWnd, EDIT_ID_2, L"Message retourne :", &transformBase, ES_LEFT);
 	object = new ObjectUI(EDIT_ID_2, "TextReturn", transformBase, &hEdit2);
 	UIObject->push_back(object);
 }
@@ -181,16 +184,15 @@ void HandleCommand(HWND* hWnd, WPARAM wParam, LPARAM lParam)
 }
 
 
-HBRUSH HandleCtlColorStatic(WPARAM wParam, LPARAM lParam, HBRUSH hBrushTransparent) {
+HBRUSH HandleCtlColorStatic(WPARAM wParam, LPARAM lParam, HBRUSH hBrushTransparent,HWND hStatic) {
 	HDC hdcStatic = (HDC)wParam;
-	HWND hStatic = (HWND)lParam;
+	
+		SetBkMode(hdcStatic, TRANSPARENT);
 
-	SetBkMode(hdcStatic, TRANSPARENT);
-
-	if (GetDlgCtrlID(hStatic) == TEXT_RESTANT_1) {
-		COLORREF textColor = RGB(255, 0, 0); // Set text color to red
-		SetTextColor(hdcStatic, textColor);
-	}
+		if (GetDlgCtrlID(hStatic) == TEXT_RESTANT_1) {
+			COLORREF textColor = RGB(255, 0, 0); // Set text color to red
+			SetTextColor(hdcStatic, textColor);
+		}
 
 	return hBrushTransparent;
 }
