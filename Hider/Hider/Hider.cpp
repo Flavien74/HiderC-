@@ -349,7 +349,7 @@ void UpdateTextRemaining(HWND* hWnd, HWND* hEdit, HWND TextCharRestant, int& nbC
 			SendMessage(*hEdit, EM_SETLIMITTEXT, (WPARAM)1, 0);
 		}
 
-		InvalidateRect(*hWnd, NULL, TRUE);
+		InvalidateRect(*hEdit, NULL, TRUE);
 	}
 	else if (nbCurrentCharacter < nbLastCharacter) {
 		nbCharacterPossible++;
