@@ -211,7 +211,10 @@ void HandleStenography(HWND* hWnd, HWND* hEdit, wchar_t* bufferMessage) {
 	}
 
 	steno->LSBEncode(loadingHelperDecrytpe->m_currentImage->m_bitMap, bufferMessage);
-	loadingHelperDecrytpe->SaveImage(loadingHelperDecrytpe->m_currentExtension->GetCompletePath(L"_out"));
+
+	if (loadingHelperDecrytpe->SaveImage(loadingHelperDecrytpe->m_currentExtension->GetCompletePath(L"_out"))) {
+		MessageBox(*hWnd, L"Fichier bien enregistre !", L"Saving image", MB_ICONINFORMATION | MB_OK);
+	}
 
 	if (!loadingHelperEncrypte) {
 		loadingHelperEncrypte = new LoadingHelper();
