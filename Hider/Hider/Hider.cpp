@@ -201,14 +201,14 @@ HBRUSH HandleCtlColorStatic(WPARAM wParam, LPARAM lParam, HBRUSH hBrushTranspare
 void HandleStenography(HWND* hWnd, HWND* hEdit, wchar_t* bufferMessage) {
 
 	if (!loadingHelperDecrytpe || !loadingHelperDecrytpe->m_currentImage) {
-		MessageBox(*hWnd, L"Choisis un fichier comme image !", L"Missing image", MB_ICONERROR | MB_OK);
+		MessageBox(*hWnd, L"Choisis un fichier comme image avant de la stenographier !", L"Missing image", MB_ICONERROR | MB_OK);
 		HandleLoadButton1(hWnd);
 		return;
 	}
 
 	GetWindowText(*hEdit, bufferMessage, 255);
 	if (bufferMessage[0] == L'\0') {
-		MessageBox(*hWnd, L"Ecris un message a cacher dans l'image !", L"Missing image", MB_ICONERROR | MB_OK);
+		MessageBox(*hWnd, L"Ecris un message a cacher dans l'image avant de la stenographier !", L"Missing image", MB_ICONERROR | MB_OK);
 		return;
 	}
 
@@ -224,15 +224,16 @@ void HandleStenography(HWND* hWnd, HWND* hEdit, wchar_t* bufferMessage) {
 	loadingHelperEncrypte = loadingHelperDecrytpe;
 	loadingHelperDecrytpe = nullptr;
 
-	SetWindowText(*hEdit, L"\0");
 	SetWindowText(GetDlgItem(*hWnd, TEXT_RESTANT_1), L"\0");
+	SetWindowText(*hEdit, L"Message a cacher :");
+	isTextCleared = false;
 
 	InvalidateRect(*hWnd, NULL, TRUE);
 }
 
 void HandleRevealMessage(HWND* hWnd, HWND* hEdit2) {
 	if (!loadingHelperEncrypte || !loadingHelperEncrypte->m_currentImage) {
-		MessageBox(*hWnd, L"Choisis un fichier comme image !", L"Missing image", MB_ICONERROR | MB_OK);
+		MessageBox(*hWnd, L"Choisis un fichier steganographie comme image !", L"Missing image", MB_ICONERROR | MB_OK);
 		HandleLoadButton2(hWnd);
 		return;
 	}
@@ -253,19 +254,25 @@ void HandleRevealMessage(HWND* hWnd, HWND* hEdit2) {
 }
 
 
-void HandleClearImage(HWND* hWnd, HWND* hEdit, HWND* hEdit2) {
+void HandleClearImage(HWND* hWnd, HWND* hEdit, HWND* hEdit2) 
+{
+
+	SetWindowText(*hEdit2, L"\0");
+	SetWindowText(GetDlgItem(*hWnd, TEXT_RESTANT_1), L"\0");
+	nbCharacterPossible = 0;
+	SetWindowText(*hEdit, L"Message a cacher :");
+	isTextCleared = false;
+
+	InvalidateRect(*hWnd, NULL, TRUE);
 
 	if (!loadingHelperEncrypte && !loadingHelperDecrytpe) {
-		MessageBox(*hWnd, L"Choisis un fichier comme image !", L"image missing", MB_ICONERROR | MB_OK);
+		MessageBox(*hWnd, L"Toutes les images sont nettoyer !", L"image missing", MB_ICONERROR | MB_OK);
 		return;
 	}
 
 	DestroyLoadingHelper(hWnd);
 	DestroyLoadingHelper(hWnd, true);
 
-	SetWindowText(*hEdit, L"\0");
-	SetWindowText(*hEdit2, L"\0");
-	SetWindowText(GetDlgItem(*hWnd, TEXT_RESTANT_1), L"\0");
 	InvalidateRect(*hWnd, NULL, TRUE);
 }
 
@@ -317,13 +324,23 @@ void UpdateTextRemaining(HWND* hWnd, HWND* hEdit, HWND TextCharRestant, int& nbC
 	int nbCurrentCharacter = GetWindowTextLength(*hEdit);
 	wchar_t buffernumber[10];
 
+	//if ((!loadingHelperDecrytpe || !loadingHelperDecrytpe->m_currentImage) && nbCurrentCharacter == 0) {
+	//	MessageBox(*hWnd, L"Choisis un fichier comme image avant d'ecrire ton texte !", L"Missing image", MB_ICONERROR | MB_OK);
+	//	SetWindowText(*hEdit, L"Message a cacher :");
+	//	isTextCleared = false;
+	//	return;
+	//}
+
 	if (nbCurrentCharacter > nbLastCharacter) {
+
 		if (nbCharacterPossible > 0) {
+
 			nbCharacterPossible--;
 		}
 		else {
 			SendMessage(*hEdit, EM_SETLIMITTEXT, (WPARAM)1, 0);
 		}
+
 		InvalidateRect(*hWnd, NULL, TRUE);
 	}
 	else if (nbCurrentCharacter < nbLastCharacter) {
